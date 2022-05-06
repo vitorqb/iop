@@ -37,6 +37,12 @@ func New() (*OpClient) {
 	return &client
 }
 
+func(client OpClient) runWithToken(args ...string) ([]byte, error) {
+	fullArgs := append([]string{"--session", *client.token}, args...)
+	cmd := exec.Command(client.path, fullArgs...)
+	return cmd.Output()
+}
+
 func(client OpClient) EnsureLoggedIn() {
 	cmd := exec.Command(client.path, "signin", "--raw", "--session", *client.token)
 	result, err := runProxyCmd(cmd)
@@ -47,8 +53,7 @@ func(client OpClient) EnsureLoggedIn() {
 }
 
 func(client OpClient) GetPassword(itemRef string) string {
-	cmd := exec.Command(client.path, "item", "get", itemRef, "--field", "label=password")
-	result, err := runProxyCmd(cmd)
+	result, err := client.runWithToken("item", "get", itemRef, "--field", "label=password")
 	if err != nil {
 		crash("Something wen't wrong during item get", err)
 	}
