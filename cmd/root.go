@@ -2,17 +2,15 @@ package cmd
 
 import (
 	"os"
-	
+
 	"github.com/spf13/cobra"
 )
-
-
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "iop",
 	Short: "An improved (or simplified) One Password client for mortals",
-	Long: `iop fits the needs of users of 1password that really only care about querying for their passwords quickly and easily.`,
+	Long:  `iop fits the needs of users of 1password that really only care about querying for their passwords quickly and easily.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -37,5 +35,3 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 }
-
-

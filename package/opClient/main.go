@@ -2,21 +2,19 @@ package opClient
 
 import (
 	"bytes"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/vitorqb/iop/package/system"
 )
 
-type OpClient struct {
-	token *string
-	path string
-}
+const DEFAULT_CLIENT = "/usr/bin/op"
 
-func crash(errMsg string, err error) {
-	log.Fatal(errMsg)
-	log.Fatal(err)
-	os.Exit(99)
+type OpClient struct {
+	sys system.ISystem
+	token *string
+	path  string
 }
 
 func runProxyCmd(cmd *exec.Cmd) ([]byte, error) {
@@ -28,34 +26,36 @@ func runProxyCmd(cmd *exec.Cmd) ([]byte, error) {
 	return stdout.Bytes(), err
 }
 
-func New() (*OpClient) {
+func New() *OpClient {
 	token := ""
+	sys := system.New()
 	client := OpClient{
+		sys: &sys,
 		token: &token,
-		path: "/usr/bin/op",
+		path:  DEFAULT_CLIENT,
 	}
 	return &client
 }
 
-func(client OpClient) runWithToken(args ...string) ([]byte, error) {
+func (client OpClient) runWithToken(args ...string) ([]byte, error) {
 	fullArgs := append([]string{"--session", *client.token}, args...)
 	cmd := exec.Command(client.path, fullArgs...)
 	return cmd.Output()
 }
 
-func(client OpClient) EnsureLoggedIn() {
+func (client OpClient) EnsureLoggedIn() {
 	cmd := exec.Command(client.path, "signin", "--raw", "--session", *client.token)
 	result, err := runProxyCmd(cmd)
 	if err != nil {
-		crash("Something wen't wrong during signin", err)
+		client.sys.Crash("Something wen't wrong during signin", err)
 	}
 	*client.token = string(result)
 }
 
-func(client OpClient) GetPassword(itemRef string) string {
+func (client OpClient) GetPassword(itemRef string) string {
 	result, err := client.runWithToken("item", "get", itemRef, "--field", "label=password")
 	if err != nil {
-		crash("Something wen't wrong during item get", err)
+		client.sys.Crash("Something wen't wrong during item get", err)
 	}
 	return strings.Trim(string(result), "\n")
 }

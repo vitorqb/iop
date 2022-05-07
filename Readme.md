@@ -14,3 +14,11 @@ $ iop copy-password -n <NAME>
 # List the name of known passwords
 $ iop list-password
 ```
+
+## Development
+
+### Test
+
+```sh
+go test -v ./...
+```
