@@ -1,12 +1,22 @@
 package opClient
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tempScript"
 )
+
+func getTestDataFilePath(testDataFileName string) (string, error) {
+	path, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(path, "/test_data", testDataFileName), nil
+}
 
 func TestNewCreatesANewClientInstance(t *testing.T) {
 	opClient := New()
@@ -64,5 +74,19 @@ func TestGetPasswordRetunsThePassword(t *testing.T) {
 			path:  scriptPath,
 		}
 		assert.Equal(t, opClient.GetPassword("itemRef"), "12345")
+	})
+}
+
+func TestListItemTitlesReturnItemTitles(t *testing.T) {
+	testDataFilePath, _ := getTestDataFilePath("op_list_1.json")
+	expectedTitles := []string{"some title 1", "some title 2"}
+	testFileCatScript := tempScript.New("#!/bin/sh \ncat " + testDataFilePath)
+	testFileCatScript.Run(func(scriptPath string) {
+		token := ""
+		opClient := OpClient{
+			token: &token,
+			path:  scriptPath,
+		}
+		assert.ElementsMatch(t, expectedTitles, opClient.ListItemTitles())
 	})
 }

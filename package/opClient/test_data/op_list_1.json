@@ -1,0 +1,44 @@
+[
+    {
+        "id": "someid1",
+        "title": "some title 1",
+        "version": 1,
+        "vault": {
+            "id": "myvaultid",
+            "name": "myvaultname"
+        },
+        "category": "LOGIN",
+        "last_edited_by": "SOMEONE",
+        "created_at": "2020-06-23T07:31:16Z",
+        "updated_at": "2020-06-23T07:31:18Z",
+        "additional_information": "SOME_INFO",
+        "urls": [
+            {
+                "label": "site Internet",
+                "primary": true,
+                "href": "https://www.some.url"
+            }
+        ]
+    },
+    {
+        "id": "someid2",
+        "title": "some title 2",
+        "version": 7,
+        "vault": {
+            "id": "myvaultid",
+            "name": "myvaultname"
+        },
+        "category": "LOGIN",
+        "last_edited_by": "SOMEONE",
+        "created_at": "2018-12-06T08:33:31Z",
+        "updated_at": "2021-03-01T14:26:11Z",
+        "additional_information": "SOME_INFO",
+        "urls": [
+            {
+                "label": "site web",
+                "primary": true,
+                "href": "https://another.url"
+            }
+        ]
+    }
+]

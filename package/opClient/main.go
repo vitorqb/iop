@@ -2,6 +2,7 @@ package opClient
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"os/exec"
 	"strings"
@@ -34,6 +35,16 @@ func (client OpClient) runWithToken(args ...string) ([]byte, error) {
 	return cmd.Output()
 }
 
+func (client OpClient) listItems() ([]itemListItem, error) {
+	opRawResult, err := client.runWithToken("item", "list", "--format", "json")
+	if err != nil {
+		return []itemListItem{}, err
+	}
+	var items []itemListItem
+	json.Unmarshal(opRawResult, &items)
+	return items, nil
+}
+
 func (client OpClient) EnsureLoggedIn() {
 	cmd := exec.Command(client.path, "signin", "--raw", "--session", *client.token)
 	result, err := runProxyCmd(cmd)
@@ -49,6 +60,18 @@ func (client OpClient) GetPassword(itemRef string) string {
 		client.sys.Crash("Something wen't wrong during item get", err)
 	}
 	return strings.Trim(string(result), "\n")
+}
+
+func (client OpClient) ListItemTitles() []string {
+	var items, err = client.listItems()
+	if err != nil {
+		client.sys.Crash("Something went wrong recovering the list of items", err)
+	}
+	var result []string
+	for _, item := range items {
+		result = append(result, item.Title)
+	}
+	return result
 }
 
 func New() *OpClient {
