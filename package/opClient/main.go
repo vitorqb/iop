@@ -11,12 +11,7 @@ import (
 
 const DEFAULT_CLIENT = "/usr/bin/op"
 
-type OpClient struct {
-	sys   system.ISystem
-	token *string
-	path  string
-}
-
+// Runs a command leaving the stdin and stderr of the current execution.
 func runProxyCmd(cmd *exec.Cmd) ([]byte, error) {
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
@@ -26,15 +21,11 @@ func runProxyCmd(cmd *exec.Cmd) ([]byte, error) {
 	return stdout.Bytes(), err
 }
 
-func New() *OpClient {
-	token := ""
-	sys := system.New()
-	client := OpClient{
-		sys:   &sys,
-		token: &token,
-		path:  DEFAULT_CLIENT,
-	}
-	return &client
+// A client for the `op` (1password cli) program
+type OpClient struct {
+	sys   system.ISystem
+	token *string
+	path  string
 }
 
 func (client OpClient) runWithToken(args ...string) ([]byte, error) {
@@ -58,4 +49,15 @@ func (client OpClient) GetPassword(itemRef string) string {
 		client.sys.Crash("Something wen't wrong during item get", err)
 	}
 	return strings.Trim(string(result), "\n")
+}
+
+func New() *OpClient {
+	token := ""
+	sys := system.New()
+	client := OpClient{
+		sys:   &sys,
+		token: &token,
+		path:  DEFAULT_CLIENT,
+	}
+	return &client
 }
