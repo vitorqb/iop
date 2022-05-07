@@ -12,7 +12,7 @@ import (
 const DEFAULT_CLIENT = "/usr/bin/op"
 
 type OpClient struct {
-	sys system.ISystem
+	sys   system.ISystem
 	token *string
 	path  string
 }
@@ -30,7 +30,7 @@ func New() *OpClient {
 	token := ""
 	sys := system.New()
 	client := OpClient{
-		sys: &sys,
+		sys:   &sys,
 		token: &token,
 		path:  DEFAULT_CLIENT,
 	}

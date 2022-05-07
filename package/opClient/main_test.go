@@ -46,7 +46,7 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 	tempScript.New("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
 		token := ""
 		opClient := OpClient{
-			sys: &mockSystem,
+			sys:   &mockSystem,
 			token: &token,
 			path:  scriptPath,
 		}
