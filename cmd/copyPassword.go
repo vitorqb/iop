@@ -8,19 +8,22 @@ import (
 
 	"github.com/vitorqb/iop/package/opClient"
 	"github.com/vitorqb/iop/package/system"
+	"github.com/vitorqb/iop/package/tokenStorage"
 )
 
 var copyPasswordCmd = &cobra.Command{
 	Use:   "copy-password",
 	Short: "Copies a password to clipboard",
 	Run: func(cmd *cobra.Command, args []string) {
+		system := system.New()
+		tokenStorage, err := tokenStorage.New("")
+		if err != nil {
+			system.Crash("Could not initialize opClient", err)
+		}
 		itemRef, _ := cmd.Flags().GetString("ref")
-		client := opClient.New()
+		client := opClient.New(&system, tokenStorage)
 		client.EnsureLoggedIn()
-
-		// TODO -> If we init a system here, why not pass it to opClient?
 		if itemRef == "" {
-			system := system.New()
 			titles := client.ListItemTitles()
 			selectedTitle, err := system.AskUserToSelectString(titles)
 			if err != nil {

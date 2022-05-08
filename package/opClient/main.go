@@ -93,18 +93,10 @@ func (client OpClient) ListItemTitles() []string {
 	return result
 }
 
-func New() *OpClient {
-	sys := system.New()
-	tokenStorage, err := tokenStorage.New("")
-	if err != nil {
-		sys.Crash("Could not initialize opClient", err)
-	}
-	token, err := tokenStorage.Get()
-	if err != nil {
-		sys.Crash("Could not recover token", err)
-	}
+func New(sys system.ISystem, tokenStorage tokenStorage.ITokenStorage) *OpClient {
+	token := ""
 	client := OpClient{
-		sys:          &sys,
+		sys:          sys,
 		token:        &token,
 		path:         DEFAULT_CLIENT,
 		tokenStorage: tokenStorage,

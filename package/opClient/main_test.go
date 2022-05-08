@@ -11,8 +11,9 @@ import (
 )
 
 func TestNewCreatesANewClientInstance(t *testing.T) {
-	t.Skip("We need to re-think how we test New without side-effects or sys dependencies")
-	opClient := New()
+	sys := system.NewMock()
+	tokenStorage := tokenStorage.NewInMemoryTokenStorage()
+	opClient := New(&sys, &tokenStorage)
 	if *opClient.token != "" {
 		t.Fatal("Unexpected token")
 	}
