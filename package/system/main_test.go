@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vitorqb/iop/package/tempScript"
+	"github.com/vitorqb/iop/package/tempFiles"
 )
 
 func TestAskUserToSelectStringReturnsSelected(t *testing.T) {
-	tempScript.New("#!/bin/sh \nhead -n1").Run(func(scriptPath string) {
+	tempFiles.NewTempScript("#!/bin/sh \nhead -n1").Run(func(scriptPath string) {
 		system := System{userSelectProgram: scriptPath}
 		result, err := system.AskUserToSelectString([]string{"atitle"})
 		assert.Nil(t, err)

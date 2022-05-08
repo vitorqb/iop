@@ -1,5 +1,4 @@
-// !!!! TODO RENAME PACKAGE TO TEMPFILE
-package tempScript
+package tempFiles
 
 import (
 	"io/ioutil"

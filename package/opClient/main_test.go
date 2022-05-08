@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vitorqb/iop/package/system"
-	"github.com/vitorqb/iop/package/tempScript"
+	"github.com/vitorqb/iop/package/tempFiles"
 	"github.com/vitorqb/iop/package/testUtils"
 )
 
@@ -31,7 +31,7 @@ func TestRunWithTokenAppendsToken(t *testing.T) {
 }
 
 func TestEnsureLoggedInSetsToken(t *testing.T) {
-	tempScript.New("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
+	tempFiles.NewTempScript("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
 		token := ""
 		opClient := OpClient{
 			token: &token,
@@ -44,7 +44,7 @@ func TestEnsureLoggedInSetsToken(t *testing.T) {
 
 func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 	mockSystem := system.NewMock()
-	tempScript.New("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
+	tempFiles.NewTempScript("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
 		token := ""
 		opClient := OpClient{
 			sys:   &mockSystem,
@@ -58,7 +58,7 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 }
 
 func TestGetPasswordRetunsThePassword(t *testing.T) {
-	tempScript.New("#!/bin/sh \necho -n '12345\n'").Run(func(scriptPath string) {
+	tempFiles.NewTempScript("#!/bin/sh \necho -n '12345\n'").Run(func(scriptPath string) {
 		token := ""
 		opClient := OpClient{
 			token: &token,
@@ -71,7 +71,7 @@ func TestGetPasswordRetunsThePassword(t *testing.T) {
 func TestListItemTitlesReturnItemTitles(t *testing.T) {
 	testDataFilePath, _ := testUtils.GetTestDataFilePath("op_list_1.json")
 	expectedTitles := []string{"some title 1", "some title 2"}
-	testFileCatScript := tempScript.New("#!/bin/sh \ncat " + testDataFilePath)
+	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
 	testFileCatScript.Run(func(scriptPath string) {
 		token := ""
 		opClient := OpClient{
