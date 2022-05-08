@@ -6,7 +6,8 @@ import (
 )
 
 // Allows user to run a function with a temporary file path
-type tempFile struct {}
+type tempFile struct{}
+
 func (tempFile) Run(f func(file *os.File) error) error {
 	file, err := ioutil.TempFile("", "test-file")
 	if err != nil {

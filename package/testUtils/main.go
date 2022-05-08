@@ -1,8 +1,8 @@
 package testUtils
 
 import (
-	"path/filepath"
 	"os"
+	"path/filepath"
 )
 
 func GetTestDataFilePath(testDataFileName string) (string, error) {

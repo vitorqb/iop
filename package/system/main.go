@@ -8,16 +8,16 @@ import (
 	"strings"
 )
 
-const USER_SELECT_PROGRAM="dmenu"
+const USER_SELECT_PROGRAM = "dmenu"
 
-// An interface to control the System, mostly useful for tests
+// An interface to control the System
 type ISystem interface {
 	Crash(errMsg string, err error)
 	AskUserToSelectString(options []string) (string, error)
 }
 
 // A real system implementation
-type System struct{
+type System struct {
 	userSelectProgram string
 }
 
