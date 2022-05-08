@@ -3,11 +3,13 @@ package opClient
 import (
 	"bytes"
 	"encoding/json"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/vitorqb/iop/package/system"
+	"github.com/vitorqb/iop/package/tokenStorage"
 )
 
 const DEFAULT_CLIENT = "/usr/bin/op"
@@ -24,7 +26,9 @@ func runProxyCmd(cmd *exec.Cmd) ([]byte, error) {
 
 // A client for the `op` (1password cli) program
 type OpClient struct {
-	sys   system.ISystem
+	tokenStorage tokenStorage.ITokenStorage
+	sys          system.ISystem
+	// TODO - We no longer need this token here since we have tokenStorage
 	token *string
 	path  string
 }
@@ -45,13 +49,28 @@ func (client OpClient) listItems() ([]itemListItem, error) {
 	return items, nil
 }
 
+func (client OpClient) loadToken() string {
+	if token := *client.token; token != "" {
+		return token
+	}
+	if token, _ := client.tokenStorage.Get(); token != "" {
+		return token
+	}
+	return ""
+}
+
 func (client OpClient) EnsureLoggedIn() {
-	cmd := exec.Command(client.path, "signin", "--raw", "--session", *client.token)
+	token := client.loadToken()
+	cmd := exec.Command(client.path, "signin", "--raw", "--session", token)
 	result, err := runProxyCmd(cmd)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
 	}
 	*client.token = string(result)
+	err = client.tokenStorage.Put(*client.token)
+	if err != nil {
+		log.Printf("WARNING: could not save token: %s\n", err)
+	}
 }
 
 func (client OpClient) GetPassword(itemRef string) string {
@@ -75,12 +94,20 @@ func (client OpClient) ListItemTitles() []string {
 }
 
 func New() *OpClient {
-	token := ""
 	sys := system.New()
+	tokenStorage, err := tokenStorage.New("")
+	if err != nil {
+		sys.Crash("Could not initialize opClient", err)
+	}
+	token, err := tokenStorage.Get()
+	if err != nil {
+		sys.Crash("Could not recover token", err)
+	}
 	client := OpClient{
-		sys:   &sys,
-		token: &token,
-		path:  DEFAULT_CLIENT,
+		sys:          &sys,
+		token:        &token,
+		path:         DEFAULT_CLIENT,
+		tokenStorage: tokenStorage,
 	}
 	return &client
 }
