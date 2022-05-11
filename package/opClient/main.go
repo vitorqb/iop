@@ -28,13 +28,23 @@ func runProxyCmd(cmd *exec.Cmd) ([]byte, error) {
 type OpClient struct {
 	tokenStorage tokenStorage.ITokenStorage
 	sys          system.ISystem
-	// TODO - We no longer need this token here since we have tokenStorage
-	token *string
 	path  string
 }
 
+func (client OpClient) getToken() (string, error) {
+	token, err := client.tokenStorage.Get()
+	if err != nil {
+		return "", err
+	}
+	return string(token), nil
+}
+
 func (client OpClient) runWithToken(args ...string) ([]byte, error) {
-	fullArgs := append([]string{"--session", *client.token}, args...)
+	token, err := client.getToken()
+	if err != nil {
+		return nil, err
+	}
+	fullArgs := append([]string{"--session", token}, args...)
 	cmd := exec.Command(client.path, fullArgs...)
 	return cmd.Output()
 }
@@ -49,25 +59,17 @@ func (client OpClient) listItems() ([]itemListItem, error) {
 	return items, nil
 }
 
-func (client OpClient) loadToken() string {
-	if token := *client.token; token != "" {
-		return token
-	}
-	if token, _ := client.tokenStorage.Get(); token != "" {
-		return token
-	}
-	return ""
-}
-
 func (client OpClient) EnsureLoggedIn() {
-	token := client.loadToken()
+	token, err := client.getToken()
+	if err != nil {
+		client.sys.Crash("Something wen't wrong when recovering the token", err)
+	}
 	cmd := exec.Command(client.path, "signin", "--raw", "--session", token)
 	result, err := runProxyCmd(cmd)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
 	}
-	*client.token = string(result)
-	err = client.tokenStorage.Put(*client.token)
+	err = client.tokenStorage.Put(string(result))
 	if err != nil {
 		log.Printf("WARNING: could not save token: %s\n", err)
 	}
@@ -94,10 +96,8 @@ func (client OpClient) ListItemTitles() []string {
 }
 
 func New(sys system.ISystem, tokenStorage tokenStorage.ITokenStorage) *OpClient {
-	token := ""
 	client := OpClient{
 		sys:          sys,
-		token:        &token,
 		path:         DEFAULT_CLIENT,
 		tokenStorage: tokenStorage,
 	}

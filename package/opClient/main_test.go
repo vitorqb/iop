@@ -12,53 +12,34 @@ import (
 
 func TestNewCreatesANewClientInstance(t *testing.T) {
 	sys := system.NewMock()
-	tokenStorage := tokenStorage.NewInMemoryTokenStorage()
+	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 	opClient := New(&sys, &tokenStorage)
-	if *opClient.token != "" {
-		t.Fatal("Unexpected token")
-	}
 	if opClient.path != DEFAULT_CLIENT {
 		t.Fatal("Unexpected path")
 	}
 }
 
 func TestRunWithTokenAppendsToken(t *testing.T) {
-	token := "token"
-	tokenStorage := tokenStorage.NewInMemoryTokenStorage()
+	tokenStorage := tokenStorage.NewInMemoryTokenStorage("FOO")
 	opClient := OpClient{
 		tokenStorage: &tokenStorage,
-		token:        &token,
 		path:         "echo",
 	}
 	result, err := opClient.runWithToken("bar")
 	assert.Nil(t, err)
-	assert.Equal(t, string(result), "--session "+token+" bar\n")
-}
-
-func TestEnsureLoggedInSetsToken(t *testing.T) {
-	tempFiles.NewTempScript("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
-		tokenStorage := tokenStorage.NewInMemoryTokenStorage()
-		token := ""
-		opClient := OpClient{
-			tokenStorage: &tokenStorage,
-			token:        &token,
-			path:         scriptPath,
-		}
-		opClient.EnsureLoggedIn()
-		assert.Equal(t, *opClient.token, "123")
-	})
+	assert.Equal(t, string(result), "--session FOO bar\n")
 }
 
 func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 	tempFiles.NewTempScript("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
-		token := ""
-		tokenStorage := tokenStorage.NewInMemoryTokenStorage()
+		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		opClient := OpClient{
-			token:        &token,
 			path:         scriptPath,
 			tokenStorage: &tokenStorage,
 		}
 		opClient.EnsureLoggedIn()
+		token, _ := opClient.getToken()
+		assert.Equal(t, token, "123")
 		assert.Equal(t, tokenStorage.Token, "123")
 	})
 }
@@ -66,12 +47,10 @@ func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 	mockSystem := system.NewMock()
 	tempFiles.NewTempScript("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
-		token := ""
-		tokenStorage := tokenStorage.NewInMemoryTokenStorage()
+		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
 			sys:          &mockSystem,
-			token:        &token,
 			path:         scriptPath,
 		}
 		opClient.EnsureLoggedIn()
@@ -82,11 +61,9 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 
 func TestGetPasswordRetunsThePassword(t *testing.T) {
 	tempFiles.NewTempScript("#!/bin/sh \necho -n '12345\n'").Run(func(scriptPath string) {
-		tokenStorage := tokenStorage.NewInMemoryTokenStorage()
-		token := ""
+		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
-			token:        &token,
 			path:         scriptPath,
 		}
 		assert.Equal(t, opClient.GetPassword("itemRef"), "12345")
@@ -98,11 +75,9 @@ func TestListItemTitlesReturnItemTitles(t *testing.T) {
 	expectedTitles := []string{"some title 1", "some title 2"}
 	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
 	testFileCatScript.Run(func(scriptPath string) {
-		tokenStorage := tokenStorage.NewInMemoryTokenStorage()
-		token := ""
+		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
-			token:        &token,
 			path:         scriptPath,
 		}
 		assert.ElementsMatch(t, expectedTitles, opClient.ListItemTitles())

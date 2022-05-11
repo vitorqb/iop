@@ -74,6 +74,6 @@ func (s *inMemoryTokenStorage) Put(token string) error {
 func (s *inMemoryTokenStorage) Get() (string, error) {
 	return s.Token, nil
 }
-func NewInMemoryTokenStorage() inMemoryTokenStorage {
-	return inMemoryTokenStorage{Token: ""}
+func NewInMemoryTokenStorage(initialToken string) inMemoryTokenStorage {
+	return inMemoryTokenStorage{Token: initialToken}
 }
