@@ -33,7 +33,10 @@ var copyPasswordCmd = &cobra.Command{
 		}
 
 		password := client.GetPassword(itemRef)
-		clipboard.WriteAll(password)
+		err = clipboard.WriteAll(password)
+		if err != nil {
+			system.Crash("Something went wrong when writing to clipboard", err)
+		}
 		log.Println("Copied to clipboard!")
 	},
 }

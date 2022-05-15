@@ -9,7 +9,7 @@ import (
 )
 
 func Test_FileTokenStorage_PutAndGet(t *testing.T) {
-	tempFiles.NewTempFile().Run(func(file *os.File) error {
+	err := tempFiles.NewTempFile().Run(func(file *os.File) error {
 		fileTokenStorage, err := New(file.Name())
 		assert.Nil(t, err)
 
@@ -17,16 +17,25 @@ func Test_FileTokenStorage_PutAndGet(t *testing.T) {
 		assert.Equal(t, "", getBeforePut)
 		assert.Nil(t, errBeforePut)
 
-		fileTokenStorage.Put("FOO")
+		err = fileTokenStorage.Put("FOO")
+		if err != nil {
+			t.Error(err)
+		}
 		getAfterPutFoo, errAfterPutFoo := fileTokenStorage.Get()
 		assert.Equal(t, getAfterPutFoo, "FOO")
 		assert.Nil(t, errAfterPutFoo)
 
-		fileTokenStorage.Put("BAR")
+		err = fileTokenStorage.Put("BAR")
+		if err != nil {
+			t.Error(err)
+		}
 		getAfterPutBar, errAfterPutBar := fileTokenStorage.Get()
 		assert.Equal(t, getAfterPutBar, "BAR")
 		assert.Nil(t, errAfterPutBar)
 
 		return nil
 	})
+	if err != nil {
+		t.Error(err)
+	}
 }

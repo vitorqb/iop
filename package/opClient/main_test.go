@@ -31,7 +31,7 @@ func TestRunWithTokenAppendsToken(t *testing.T) {
 }
 
 func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
-	tempFiles.NewTempScript("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
+	err := tempFiles.NewTempScript("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		opClient := OpClient{
 			path:         scriptPath,
@@ -42,11 +42,14 @@ func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 		assert.Equal(t, token, "123")
 		assert.Equal(t, tokenStorage.Token, "123")
 	})
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 	mockSystem := system.NewMock()
-	tempFiles.NewTempScript("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
+	err := tempFiles.NewTempScript("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
@@ -57,10 +60,13 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 		assert.Equal(t, mockSystem.CrashCallCount, 1)
 		assert.Equal(t, mockSystem.LastCrashErrMsg, "Something wen't wrong during signin")
 	})
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestGetPasswordRetunsThePassword(t *testing.T) {
-	tempFiles.NewTempScript("#!/bin/sh \necho -n '12345\n'").Run(func(scriptPath string) {
+	err := tempFiles.NewTempScript("#!/bin/sh \necho -n '12345\n'").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
@@ -68,13 +74,16 @@ func TestGetPasswordRetunsThePassword(t *testing.T) {
 		}
 		assert.Equal(t, opClient.GetPassword("itemRef"), "12345")
 	})
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestListItemTitlesReturnItemTitles(t *testing.T) {
 	testDataFilePath, _ := testUtils.GetTestDataFilePath("op_list_1.json")
 	expectedTitles := []string{"some title 1", "some title 2"}
 	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
-	testFileCatScript.Run(func(scriptPath string) {
+	err := testFileCatScript.Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
@@ -82,4 +91,7 @@ func TestListItemTitlesReturnItemTitles(t *testing.T) {
 		}
 		assert.ElementsMatch(t, expectedTitles, opClient.ListItemTitles())
 	})
+	if err != nil {
+		t.Error(err)
+	}
 }

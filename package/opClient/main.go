@@ -55,8 +55,8 @@ func (client OpClient) listItems() ([]itemListItem, error) {
 		return []itemListItem{}, err
 	}
 	var items []itemListItem
-	json.Unmarshal(opRawResult, &items)
-	return items, nil
+	err = json.Unmarshal(opRawResult, &items)
+	return items, err
 }
 
 func (client OpClient) EnsureLoggedIn() {
