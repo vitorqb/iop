@@ -6,22 +6,19 @@ import (
 	"github.com/atotto/clipboard"
 	"github.com/spf13/cobra"
 
-	"github.com/vitorqb/iop/package/opClient"
-	"github.com/vitorqb/iop/package/system"
-	"github.com/vitorqb/iop/package/tokenStorage"
+	"github.com/vitorqb/iop/internal/provider"
 )
 
 var copyPasswordCmd = &cobra.Command{
 	Use:   "copy-password",
 	Short: "Copies a password to clipboard",
 	Run: func(cmd *cobra.Command, args []string) {
-		system := system.New()
-		tokenStorage, err := tokenStorage.New("")
-		if err != nil {
-			system.Crash("Could not initialize opClient", err)
-		}
+		system := provider.System()
+		tokenStorage := provider.TokenStorage(system)
+		client := provider.OpClient(system, tokenStorage)
+
 		itemRef, _ := cmd.Flags().GetString("ref")
-		client := opClient.New(&system, tokenStorage)
+
 		client.EnsureLoggedIn()
 		if itemRef == "" {
 			titles := client.ListItemTitles()
@@ -33,7 +30,7 @@ var copyPasswordCmd = &cobra.Command{
 		}
 
 		password := client.GetPassword(itemRef)
-		err = clipboard.WriteAll(password)
+		err := clipboard.WriteAll(password)
 		if err != nil {
 			system.Crash("Something went wrong when writing to clipboard", err)
 		}
