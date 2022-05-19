@@ -1,10 +1,22 @@
 package provider
 
 import (
+	"os"
+	"path/filepath"
+
+	"github.com/vitorqb/iop/package/emailStorage"
+	"github.com/vitorqb/iop/package/opClient"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tokenStorage"
-	"github.com/vitorqb/iop/package/opClient"
 )
+
+func getUserDir(system system.ISystem) string {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		system.Crash("Could not get user home directory", err)
+	}
+	return homeDir
+}
 
 func System() system.ISystem {
 	system := system.New()
@@ -19,6 +31,12 @@ func TokenStorage(system system.ISystem) tokenStorage.ITokenStorage {
 	return tokenStorage
 }
 
-func OpClient(sys system.ISystem, tokenStorage tokenStorage.ITokenStorage) *opClient.OpClient {
+func EmailStorage(system system.ISystem) emailStorage.IEmailStorage {
+	homeDir := getUserDir(system)
+	filePath := filepath.Join(homeDir, ".iop/currentAccount")
+	return emailStorage.New(filePath)
+}
+
+func OpClient(sys system.ISystem, tokenStorage tokenStorage.ITokenStorage) opClient.IOpClient {
 	return opClient.New(sys, tokenStorage)
 }

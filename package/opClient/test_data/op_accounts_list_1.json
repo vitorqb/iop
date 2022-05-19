@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://team-foo.1password.com",
+    "email": "antonio.bababa@foo.com",
+    "user_uuid": "CCCCCCCCCDDDDDDD123123123",
+    "account_uuid": "EEEEEEEEE1231231231321312",
+    "shorthand": "team_foo"
+  },
+  {
+    "url": "https://my.1password.com",
+    "email": "antonioqb@gmail.com",
+    "user_uuid": "AAAAAAAAAAAAAABBBBBBBBBB21",
+    "account_uuid": "BBBBBBBBBBBBBCCCCCC2222222",
+    "shorthand": "my"
+  }
+]

@@ -24,6 +24,13 @@ func runProxyCmd(cmd *exec.Cmd) ([]byte, error) {
 	return stdout.Bytes(), err
 }
 
+type IOpClient interface {
+	EnsureLoggedIn()
+	GetPassword(itemRef string) string
+	ListItemTitles() []string
+	ListEmails() ([]string, error)
+}
+
 // A client for the `op` (1password cli) program
 type OpClient struct {
 	tokenStorage tokenStorage.ITokenStorage
@@ -93,6 +100,20 @@ func (client OpClient) ListItemTitles() []string {
 		result = append(result, item.Title)
 	}
 	return result
+}
+
+func (client OpClient) ListEmails() ([]string, error) {
+	output, err := exec.Command(client.path, "account", "list", "--format=json").Output()
+	if err != nil || string(output) == "" {
+		return []string{}, err
+	}
+	var accounts []accountListItem
+	err = json.Unmarshal(output, &accounts)
+	var emails []string
+	for _, account := range accounts {
+		emails = append(emails, account.Email)
+	}
+	return emails, err;
 }
 
 func New(sys system.ISystem, tokenStorage tokenStorage.ITokenStorage) *OpClient {

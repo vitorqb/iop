@@ -95,3 +95,20 @@ func TestListItemTitlesReturnItemTitles(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestListEmailsReturnEmails(t *testing.T) {
+	testDataFilePath, _ := testUtils.GetTestDataFilePath("op_accounts_list_1.json")
+	expectedEmails := []string{"antonio.bababa@foo.com", "antonioqb@gmail.com"}
+	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
+	err := testFileCatScript.Run(func(scriptPath string) {
+		opClient := OpClient{ path: scriptPath }
+		emails, err := opClient.ListEmails()
+		if err != nil {
+			t.Error(err)
+		}
+		assert.ElementsMatch(t, expectedEmails, emails)
+	})
+	if err != nil {
+		t.Error(err)
+	}	
+}
