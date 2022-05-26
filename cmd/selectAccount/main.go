@@ -1,4 +1,4 @@
-package cmd
+package selectAccount
 
 import (
 	"github.com/spf13/cobra"
@@ -41,7 +41,7 @@ func run(
 	// !!!! TODO LOG SMTH TO THE USER (add to ISystem)
 }
 
-func init() {
+func Setup(rootCmd *cobra.Command) {
 	// !!!! TODO ALLOW USER TO PASS FROM CLI ARGUMENT THE ACCOUNT
 	rootCmd.AddCommand(selectAccountCmd)
 }

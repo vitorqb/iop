@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/vitorqb/iop/cmd/copyPassword"
+	"github.com/vitorqb/iop/cmd/selectAccount"
 )
 
 var rootCmd = &cobra.Command{
@@ -22,4 +23,5 @@ func Execute() {
 
 func init() {
 	copyPassword.Setup(rootCmd)
+	selectAccount.Setup(rootCmd)
 }

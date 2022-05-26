@@ -1,4 +1,4 @@
-package cmd
+package selectAccount
 
 import (
 	"testing"
