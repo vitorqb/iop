@@ -1,4 +1,4 @@
-package cmd
+package copyPassword
 
 import (
 	"log"
@@ -18,7 +18,6 @@ var copyPasswordCmd = &cobra.Command{
 		client := provider.OpClient(system, tokenStorage)
 
 		itemRef, _ := cmd.Flags().GetString("ref")
-
 		client.EnsureLoggedIn()
 		if itemRef == "" {
 			titles := client.ListItemTitles()
@@ -38,8 +37,7 @@ var copyPasswordCmd = &cobra.Command{
 	},
 }
 
-func init() {
+func Setup(rootCmd *cobra.Command) {
 	copyPasswordCmd.Flags().StringP("ref", "n", "", "Reference (name,id,link) of the item to copy.")
-
 	rootCmd.AddCommand(copyPasswordCmd)
 }
