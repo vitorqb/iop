@@ -4,16 +4,20 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/vitorqb/iop/package/emailStorage"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tempFiles"
 	"github.com/vitorqb/iop/package/testUtils"
 	"github.com/vitorqb/iop/package/tokenStorage"
 )
 
+// !!!! TODO Can we have a builder for opClient that defaults stuff?
+
 func TestNewCreatesANewClientInstance(t *testing.T) {
 	sys := system.NewMock()
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
-	opClient := New(&sys, &tokenStorage)
+	emailStorage := emailStorage.NewInMemoryEmailStorage("")
+	opClient := New(&sys, &tokenStorage, &emailStorage)
 	if opClient.path != DEFAULT_CLIENT {
 		t.Fatal("Unexpected path")
 	}
@@ -21,8 +25,10 @@ func TestNewCreatesANewClientInstance(t *testing.T) {
 
 func TestRunWithTokenAppendsToken(t *testing.T) {
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("FOO")
+	emailStorage := emailStorage.NewInMemoryEmailStorage("")
 	opClient := OpClient{
 		tokenStorage: &tokenStorage,
+		emailStorage: &emailStorage,
 		path:         "echo",
 	}
 	result, err := opClient.runWithToken("bar")
@@ -33,9 +39,11 @@ func TestRunWithTokenAppendsToken(t *testing.T) {
 func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 	err := tempFiles.NewTempScript("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
+		emailStorage := emailStorage.NewInMemoryEmailStorage("")
 		opClient := OpClient{
 			path:         scriptPath,
 			tokenStorage: &tokenStorage,
+		emailStorage: &emailStorage,
 		}
 		opClient.EnsureLoggedIn()
 		token, _ := opClient.getToken()
@@ -51,8 +59,10 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 	mockSystem := system.NewMock()
 	err := tempFiles.NewTempScript("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
+		emailStorage := emailStorage.NewInMemoryEmailStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
+		emailStorage: &emailStorage,
 			sys:          &mockSystem,
 			path:         scriptPath,
 		}
@@ -68,8 +78,10 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 func TestGetPasswordRetunsThePassword(t *testing.T) {
 	err := tempFiles.NewTempScript("#!/bin/sh \necho -n '12345\n'").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
+		emailStorage := emailStorage.NewInMemoryEmailStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
+		emailStorage: &emailStorage,
 			path:         scriptPath,
 		}
 		assert.Equal(t, opClient.GetPassword("itemRef"), "12345")
@@ -85,8 +97,10 @@ func TestListItemTitlesReturnItemTitles(t *testing.T) {
 	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
 	err := testFileCatScript.Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
+		emailStorage := emailStorage.NewInMemoryEmailStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
+		emailStorage: &emailStorage,
 			path:         scriptPath,
 		}
 		assert.ElementsMatch(t, expectedTitles, opClient.ListItemTitles())

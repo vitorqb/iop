@@ -27,3 +27,22 @@ func(f fileEmailStorage) Get() (string, error) {
 func New(filePath string) fileEmailStorage {
 	return fileEmailStorage{ filePath: filePath }
 }
+
+// !!!! TODO Unify with tokenStorage
+type inMemoryEmailStorage struct {
+	Email string
+}
+
+// !!!! TODO Unify with tokenStorage
+func (s *inMemoryEmailStorage) Put(email string) error {
+	s.Email = email
+	return nil
+}
+// !!!! TODO Unify with tokenStorage
+func (s *inMemoryEmailStorage) Get() (string, error) {
+	return s.Email, nil
+}
+// !!!! TODO Unify with tokenStorage
+func NewInMemoryEmailStorage(initialEmail string) inMemoryEmailStorage {
+	return inMemoryEmailStorage{Email: initialEmail}
+}

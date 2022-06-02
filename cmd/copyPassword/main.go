@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/vitorqb/iop/internal/provider"
+	"github.com/vitorqb/iop/package/opClient"
+	"github.com/vitorqb/iop/package/system"
 )
 
 var copyPasswordCmd = &cobra.Command{
@@ -15,26 +17,32 @@ var copyPasswordCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		system := provider.System()
 		tokenStorage := provider.TokenStorage(system)
-		client := provider.OpClient(system, tokenStorage)
+		emailStorage := provider.EmailStorage(system)
+		client := provider.OpClient(system, tokenStorage, emailStorage)
 
 		itemRef, _ := cmd.Flags().GetString("ref")
-		client.EnsureLoggedIn()
-		if itemRef == "" {
-			titles := client.ListItemTitles()
-			selectedTitle, err := system.AskUserToSelectString(titles)
-			if err != nil {
-				system.Crash("Something went wrong asking user to select title", err)
-			}
-			itemRef = selectedTitle
-		}
-
-		password := client.GetPassword(itemRef)
-		err := clipboard.WriteAll(password)
-		if err != nil {
-			system.Crash("Something went wrong when writing to clipboard", err)
-		}
-		log.Println("Copied to clipboard!")
+		run(client, itemRef, system)
 	},
+}
+
+func run(client opClient.IOpClient, itemRef string, system system.ISystem) {
+	client.EnsureLoggedIn()
+	if itemRef == "" {
+		titles := client.ListItemTitles()
+		selectedTitle, err := system.AskUserToSelectString(titles)
+		if err != nil {
+			system.Crash("Something went wrong asking user to select title", err)
+		}
+		itemRef = selectedTitle
+	}
+
+	password := client.GetPassword(itemRef)
+	err := clipboard.WriteAll(password)
+	if err != nil {
+		system.Crash("Something went wrong when writing to clipboard", err)
+	}
+	log.Println("Copied to clipboard!")
+
 }
 
 func Setup(rootCmd *cobra.Command) {

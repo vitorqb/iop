@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/vitorqb/iop/package/emailStorage"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tokenStorage"
 )
@@ -35,7 +36,8 @@ type IOpClient interface {
 type OpClient struct {
 	tokenStorage tokenStorage.ITokenStorage
 	sys          system.ISystem
-	path  string
+	path         string
+	emailStorage emailStorage.IEmailStorage
 }
 
 func (client OpClient) getToken() (string, error) {
@@ -66,12 +68,24 @@ func (client OpClient) listItems() ([]itemListItem, error) {
 	return items, err
 }
 
+func (client OpClient) getCurrentEmail() (string, error) {
+	email, err := client.emailStorage.Get()
+	if err != nil {
+		return "", err
+	}
+	return email, nil
+}
+
 func (client OpClient) EnsureLoggedIn() {
 	token, err := client.getToken()
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the token", err)
 	}
-	cmd := exec.Command(client.path, "signin", "--raw", "--session", token)
+	email, err := client.getCurrentEmail()
+	if err != nil {
+		client.sys.Crash("Something wen't wrong when recovering the account", err)
+	}	
+	cmd := exec.Command(client.path, "signin", "--raw", "--session", "--account", email, token)
 	result, err := runProxyCmd(cmd)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
@@ -116,11 +130,16 @@ func (client OpClient) ListEmails() ([]string, error) {
 	return emails, err;
 }
 
-func New(sys system.ISystem, tokenStorage tokenStorage.ITokenStorage) *OpClient {
+func New(
+	sys system.ISystem,
+	tokenStorage tokenStorage.ITokenStorage,
+	emailStorage emailStorage.IEmailStorage,
+) *OpClient {
 	client := OpClient{
 		sys:          sys,
 		path:         DEFAULT_CLIENT,
 		tokenStorage: tokenStorage,
+		emailStorage: emailStorage,
 	}
 	return &client
 }

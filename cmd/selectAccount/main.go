@@ -16,7 +16,7 @@ var selectAccountCmd = &cobra.Command{
 		system := provider.System()
 		tokenStorage := provider.TokenStorage(system)
 		emailStorage := provider.EmailStorage(system)
-		client := provider.OpClient(system, tokenStorage)
+		client := provider.OpClient(system, tokenStorage, emailStorage)
 		run(client, system, emailStorage)
 	},
 }

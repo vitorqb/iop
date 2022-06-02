@@ -37,6 +37,10 @@ func EmailStorage(system system.ISystem) emailStorage.IEmailStorage {
 	return emailStorage.New(filePath)
 }
 
-func OpClient(sys system.ISystem, tokenStorage tokenStorage.ITokenStorage) opClient.IOpClient {
-	return opClient.New(sys, tokenStorage)
+func OpClient(
+	sys system.ISystem,
+	tokenStorage tokenStorage.ITokenStorage,
+	emailStorage emailStorage.IEmailStorage,
+) opClient.IOpClient {
+	return opClient.New(sys, tokenStorage, emailStorage)
 }
