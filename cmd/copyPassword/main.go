@@ -17,8 +17,8 @@ var copyPasswordCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		system := provider.System()
 		tokenStorage := provider.TokenStorage(system)
-		emailStorage := provider.EmailStorage(system)
-		client := provider.OpClient(system, tokenStorage, emailStorage)
+		accountStorage := provider.AccountStorage(system)
+		client := provider.OpClient(system, tokenStorage, accountStorage)
 
 		itemRef, _ := cmd.Flags().GetString("ref")
 		run(client, itemRef, system)

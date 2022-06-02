@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/vitorqb/iop/package/emailStorage"
+	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
 	"github.com/vitorqb/iop/package/system"
@@ -32,17 +32,17 @@ func TokenStorage(system system.ISystem) tokenStorage.ITokenStorage {
 	return tokenStorage
 }
 
-func EmailStorage(system system.ISystem) emailStorage.IEmailStorage {
+func AccountStorage(system system.ISystem) accountStorage.IAccountStorage {
 	homeDir := getUserDir(system)
 	filePath := filepath.Join(homeDir, ".iop/currentAccount")
-	return emailStorage.New(filePath)
+	return accountStorage.New(filePath)
 }
 
 func OpClient(
 	sys system.ISystem,
 	tokenStorage tokenStorage.ITokenStorage,
-	emailStorage emailStorage.IEmailStorage,
+	accountStorage accountStorage.IAccountStorage,
 ) opClient.IOpClient {
 	commandRunner := commandRunner.CommandRunner{}
-	return opClient.New(sys, tokenStorage, emailStorage, commandRunner)
+	return opClient.New(sys, tokenStorage, accountStorage, commandRunner)
 }

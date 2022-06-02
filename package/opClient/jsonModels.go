@@ -6,4 +6,5 @@ type itemListItem struct {
 
 type accountListItem struct {
 	Email string `json:"email"`
+	Shorthand string `json:shorthand`
 }

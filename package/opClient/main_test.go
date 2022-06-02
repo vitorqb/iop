@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vitorqb/iop/package/emailStorage"
+	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tempFiles"
@@ -17,9 +17,9 @@ import (
 func TestNewCreatesANewClientInstance(t *testing.T) {
 	sys := system.NewMock()
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
-	emailStorage := emailStorage.NewInMemoryEmailStorage("")
+	accountStorage := accountStorage.NewInMemoryAccountStorage("")
 	commandRunner := commandRunner.MockedCommandRunner{ReturnValue: ""}
-	opClient := New(&sys, &tokenStorage, &emailStorage, &commandRunner)
+	opClient := New(&sys, &tokenStorage, &accountStorage, &commandRunner)
 	if opClient.path != DEFAULT_CLIENT {
 		t.Fatal("Unexpected path")
 	}
@@ -27,10 +27,10 @@ func TestNewCreatesANewClientInstance(t *testing.T) {
 
 func TestRunWithTokenAppendsToken(t *testing.T) {
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("FOO")
-	emailStorage := emailStorage.NewInMemoryEmailStorage("")
+	accountStorage := accountStorage.NewInMemoryAccountStorage("")
 	opClient := OpClient{
 		tokenStorage: &tokenStorage,
-		emailStorage: &emailStorage,
+		accountStorage: &accountStorage,
 		path:         "echo",
 		commandRunner: commandRunner.CommandRunner{},
 	}
@@ -42,11 +42,11 @@ func TestRunWithTokenAppendsToken(t *testing.T) {
 func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 	err := tempFiles.NewTempScript("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
-		emailStorage := emailStorage.NewInMemoryEmailStorage("")
+		accountStorage := accountStorage.NewInMemoryAccountStorage("")
 		opClient := OpClient{
 			path:         scriptPath,
 			tokenStorage: &tokenStorage,
-			emailStorage: &emailStorage,
+			accountStorage: &accountStorage,
 			commandRunner: commandRunner.CommandRunner{},
 		}
 		opClient.EnsureLoggedIn()
@@ -63,10 +63,10 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 	mockSystem := system.NewMock()
 	err := tempFiles.NewTempScript("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
-		emailStorage := emailStorage.NewInMemoryEmailStorage("")
+		accountStorage := accountStorage.NewInMemoryAccountStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
-			emailStorage: &emailStorage,
+			accountStorage: &accountStorage,
 			sys:          &mockSystem,
 			path:         scriptPath,
 			commandRunner: commandRunner.CommandRunner{},
@@ -83,26 +83,26 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 func TestEnsureLoggedInRunsCorrectCommand(t *testing.T) {
 	mockSystem := system.NewMock()
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("token")
-	emailStorage := emailStorage.NewInMemoryEmailStorage("email@email.email")
+	accountStorage := accountStorage.NewInMemoryAccountStorage("account")
 	commandRunner := commandRunner.MockedCommandRunner{ReturnValue: ""}
 	opClient := OpClient{
 		tokenStorage: &tokenStorage,
-		emailStorage: &emailStorage,
+		accountStorage: &accountStorage,
 		sys: &mockSystem,
 		path: "echo",
 		commandRunner: &commandRunner,
 	}
 	opClient.EnsureLoggedIn()
-	assert.Equal(t, commandRunner.LastArgs, []string{"echo", "signin", "--raw", "--session", "token", "--account", "email@email.email"})
+	assert.Equal(t, commandRunner.LastArgs, []string{"echo", "signin", "--raw", "--session", "token", "--account", "account"})
 }
 
 func TestGetPasswordRetunsThePassword(t *testing.T) {
 	err := tempFiles.NewTempScript("#!/bin/sh \necho -n '12345\n'").Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
-		emailStorage := emailStorage.NewInMemoryEmailStorage("")
+		accountStorage := accountStorage.NewInMemoryAccountStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
-			emailStorage: &emailStorage,
+			accountStorage: &accountStorage,
 			path:         scriptPath,
 			commandRunner: commandRunner.CommandRunner{},
 		}
@@ -119,10 +119,10 @@ func TestListItemTitlesReturnItemTitles(t *testing.T) {
 	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
 	err := testFileCatScript.Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
-		emailStorage := emailStorage.NewInMemoryEmailStorage("")
+		accountStorage := accountStorage.NewInMemoryAccountStorage("")
 		opClient := OpClient{
 			tokenStorage: &tokenStorage,
-			emailStorage: &emailStorage,
+			accountStorage: &accountStorage,
 			path:         scriptPath,
 			commandRunner: commandRunner.CommandRunner{},
 		}
@@ -133,17 +133,17 @@ func TestListItemTitlesReturnItemTitles(t *testing.T) {
 	}
 }
 
-func TestListEmailsReturnEmails(t *testing.T) {
+func TestListAccountsReturnAccounts(t *testing.T) {
 	testDataFilePath, _ := testUtils.GetTestDataFilePath("op_accounts_list_1.json")
-	expectedEmails := []string{"antonio.bababa@foo.com", "antonioqb@gmail.com"}
+	expectedAccounts := []string{"team_foo", "my"}
 	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
 	err := testFileCatScript.Run(func(scriptPath string) {
 		opClient := OpClient{ path: scriptPath }
-		emails, err := opClient.ListEmails()
+		accounts, err := opClient.ListAccounts()
 		if err != nil {
 			t.Error(err)
 		}
-		assert.ElementsMatch(t, expectedEmails, emails)
+		assert.ElementsMatch(t, expectedAccounts, accounts)
 	})
 	if err != nil {
 		t.Error(err)

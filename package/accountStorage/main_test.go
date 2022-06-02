@@ -1,4 +1,4 @@
-package emailStorage
+package accountStorage
 
 import (
 	"os"

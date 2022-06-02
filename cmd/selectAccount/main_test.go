@@ -9,7 +9,7 @@ import (
 
 // Mocks & Helpers
 type MockOpClient struct {
-	emails []string
+	accounts []string
 }
 func(MockOpClient) EnsureLoggedIn() {}
 func(MockOpClient) GetPassword(itemRef string) string {
@@ -18,30 +18,30 @@ func(MockOpClient) GetPassword(itemRef string) string {
 func(MockOpClient) ListItemTitles() []string {
 	return []string{}
 }
-func(m MockOpClient) ListEmails() ([]string, error) {
-	return m.emails, nil;
+func(m MockOpClient) ListAccounts() ([]string, error) {
+	return m.accounts, nil;
 }
 
-type MockEmailStorage struct {
+type MockAccountStorage struct {
 	current string
 }
-func(m *MockEmailStorage) Put(email string) error {
-	m.current = email
+func(m *MockAccountStorage) Put(account string) error {
+	m.current = account
 	return nil
 }
-func(m *MockEmailStorage) Get() (string, error) {
+func(m *MockAccountStorage) Get() (string, error) {
 	return m.current, nil
 }
 
 
 // Tests
-func TestUserSelectsAnEmail(t *testing.T) {
-	emails := []string{"a@b.c"}
-	opClient := MockOpClient{ emails: emails }
+func TestUserSelectsAnAccount(t *testing.T) {
+	accounts := []string{"a@b.c"}
+	opClient := MockOpClient{ accounts: accounts }
 	system := system.NewMock()
-	emailStorage := MockEmailStorage{}
-	run(opClient, &system, &emailStorage)
-	storedEmail, err := emailStorage.Get()
+	accountStorage := MockAccountStorage{}
+	run(opClient, &system, &accountStorage)
+	storedAccount, err := accountStorage.Get()
 	assert.Nil(t, err)
-	assert.Equal(t, "a@b.c", storedEmail)
+	assert.Equal(t, "a@b.c", storedAccount)
 }

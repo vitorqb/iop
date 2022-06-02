@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/vitorqb/iop/package/emailStorage"
+	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tokenStorage"
@@ -30,7 +30,7 @@ type IOpClient interface {
 	EnsureLoggedIn()
 	GetPassword(itemRef string) string
 	ListItemTitles() []string
-	ListEmails() ([]string, error)
+	ListAccounts() ([]string, error)
 }
 
 // A client for the `op` (1password cli) program
@@ -38,7 +38,7 @@ type OpClient struct {
 	tokenStorage tokenStorage.ITokenStorage
 	sys           system.ISystem
 	path          string
-	emailStorage  emailStorage.IEmailStorage
+	accountStorage  accountStorage.IAccountStorage
 	commandRunner commandRunner.ICommandRunner
 }
 
@@ -69,12 +69,12 @@ func (client OpClient) listItems() ([]itemListItem, error) {
 	return items, err
 }
 
-func (client OpClient) getCurrentEmail() (string, error) {
-	email, err := client.emailStorage.Get()
+func (client OpClient) getCurrentAccount() (string, error) {
+	account, err := client.accountStorage.Get()
 	if err != nil {
 		return "", err
 	}
-	return email, nil
+	return account, nil
 }
 
 func (client OpClient) EnsureLoggedIn() {
@@ -82,11 +82,11 @@ func (client OpClient) EnsureLoggedIn() {
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the token", err)
 	}
-	email, err := client.getCurrentEmail()
+	account, err := client.getCurrentAccount()
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the account", err)
 	}	
-	result, err := client.commandRunner.RunAsProxy(client.path, "signin", "--raw", "--session",  token, "--account", email)
+	result, err := client.commandRunner.RunAsProxy(client.path, "signin", "--raw", "--session",  token, "--account", account)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
 	}
@@ -116,31 +116,31 @@ func (client OpClient) ListItemTitles() []string {
 	return result
 }
 
-func (client OpClient) ListEmails() ([]string, error) {
+func (client OpClient) ListAccounts() ([]string, error) {
 	output, err := exec.Command(client.path, "account", "list", "--format=json").Output()
 	if err != nil || string(output) == "" {
 		return []string{}, err
 	}
-	var accounts []accountListItem
-	err = json.Unmarshal(output, &accounts)
-	var emails []string
-	for _, account := range accounts {
-		emails = append(emails, account.Email)
+	var accountListItems []accountListItem
+	err = json.Unmarshal(output, &accountListItems)
+	var accounts []string
+	for _, accountListItem := range accountListItems {
+		accounts = append(accounts, accountListItem.Shorthand)
 	}
-	return emails, err;
+	return accounts, err;
 }
 
 func New(
 	sys system.ISystem,
 	tokenStorage tokenStorage.ITokenStorage,
-	emailStorage emailStorage.IEmailStorage,
+	accountStorage accountStorage.IAccountStorage,
 	commandRunner commandRunner.ICommandRunner,
 ) *OpClient {
 	client := OpClient{
 		sys:          sys,
 		path:         DEFAULT_CLIENT,
 		tokenStorage: tokenStorage,
-		emailStorage: emailStorage,
+		accountStorage: accountStorage,
 		commandRunner: commandRunner,
 	}
 	return &client
