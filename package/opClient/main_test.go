@@ -80,19 +80,20 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 	}
 }
 
-func TestEnsureLoggedInSendsEmailToSignInCommand(t *testing.T) {
+func TestEnsureLoggedInRunsCorrectCommand(t *testing.T) {
 	mockSystem := system.NewMock()
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("token")
 	emailStorage := emailStorage.NewInMemoryEmailStorage("email@email.email")
+	commandRunner := commandRunner.MockedCommandRunner{ReturnValue: ""}
 	opClient := OpClient{
 		tokenStorage: &tokenStorage,
 		emailStorage: &emailStorage,
 		sys: &mockSystem,
-		path: "cat",
-		commandRunner: commandRunner.CommandRunner{},
+		path: "echo",
+		commandRunner: &commandRunner,
 	}
 	opClient.EnsureLoggedIn()
-	
+	assert.Equal(t, commandRunner.LastArgs, []string{"echo", "signin", "--raw", "--session", "token", "--account", "email@email.email"})
 }
 
 func TestGetPasswordRetunsThePassword(t *testing.T) {
