@@ -6,6 +6,7 @@ import (
 
 	"github.com/vitorqb/iop/package/emailStorage"
 	"github.com/vitorqb/iop/package/opClient"
+	"github.com/vitorqb/iop/package/opClient/commandRunner"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tokenStorage"
 )
@@ -42,5 +43,6 @@ func OpClient(
 	tokenStorage tokenStorage.ITokenStorage,
 	emailStorage emailStorage.IEmailStorage,
 ) opClient.IOpClient {
-	return opClient.New(sys, tokenStorage, emailStorage)
+	commandRunner := commandRunner.CommandRunner{}
+	return opClient.New(sys, tokenStorage, emailStorage, commandRunner)
 }

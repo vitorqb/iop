@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/vitorqb/iop/package/emailStorage"
+	"github.com/vitorqb/iop/package/opClient/commandRunner"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tokenStorage"
 )
@@ -35,9 +36,10 @@ type IOpClient interface {
 // A client for the `op` (1password cli) program
 type OpClient struct {
 	tokenStorage tokenStorage.ITokenStorage
-	sys          system.ISystem
-	path         string
-	emailStorage emailStorage.IEmailStorage
+	sys           system.ISystem
+	path          string
+	emailStorage  emailStorage.IEmailStorage
+	commandRunner commandRunner.ICommandRunner
 }
 
 func (client OpClient) getToken() (string, error) {
@@ -54,8 +56,7 @@ func (client OpClient) runWithToken(args ...string) ([]byte, error) {
 		return nil, err
 	}
 	fullArgs := append([]string{"--session", token}, args...)
-	cmd := exec.Command(client.path, fullArgs...)
-	return cmd.Output()
+	return client.commandRunner.Run(client.path, fullArgs...)
 }
 
 func (client OpClient) listItems() ([]itemListItem, error) {
@@ -85,8 +86,7 @@ func (client OpClient) EnsureLoggedIn() {
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the account", err)
 	}	
-	cmd := exec.Command(client.path, "signin", "--raw", "--session", "--account", email, token)
-	result, err := runProxyCmd(cmd)
+	result, err := client.commandRunner.RunAsProxy(client.path, "signin", "--raw", "--session",  token, "--account", email)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
 	}
@@ -134,12 +134,14 @@ func New(
 	sys system.ISystem,
 	tokenStorage tokenStorage.ITokenStorage,
 	emailStorage emailStorage.IEmailStorage,
+	commandRunner commandRunner.ICommandRunner,
 ) *OpClient {
 	client := OpClient{
 		sys:          sys,
 		path:         DEFAULT_CLIENT,
 		tokenStorage: tokenStorage,
 		emailStorage: emailStorage,
+		commandRunner: commandRunner,
 	}
 	return &client
 }
