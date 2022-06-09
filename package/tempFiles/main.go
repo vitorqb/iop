@@ -51,3 +51,7 @@ func (t tempScript) Run(f func(path string)) error {
 func NewTempScript(body string) tempScript {
 	return tempScript{body: body}
 }
+
+func NewTempCat(fileToCat string) tempScript {
+	return tempScript{body: "#!/bin/sh \ncat " + fileToCat}
+}

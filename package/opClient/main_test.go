@@ -97,7 +97,12 @@ func TestEnsureLoggedInRunsCorrectCommand(t *testing.T) {
 }
 
 func TestGetPasswordRetunsThePassword(t *testing.T) {
-	err := tempFiles.NewTempScript("#!/bin/sh \necho -n '12345\n'").Run(func(scriptPath string) {
+	testDataFilePath, err := testUtils.GetTestDataFilePath("password_field_1.json")
+	if err != nil {
+		t.Error(err)
+	}
+	testFileCatScript := tempFiles.NewTempCat(testDataFilePath)
+	err = testFileCatScript.Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		accountStorage := accountStorage.NewInMemoryAccountStorage("")
 		opClient := OpClient{
@@ -106,7 +111,7 @@ func TestGetPasswordRetunsThePassword(t *testing.T) {
 			path:         scriptPath,
 			commandRunner: commandRunner.CommandRunner{},
 		}
-		assert.Equal(t, opClient.GetPassword("itemRef"), "12345")
+		assert.Equal(t, opClient.GetPassword("itemRef"), "the-password")
 	})
 	if err != nil {
 		t.Error(err)
@@ -116,7 +121,7 @@ func TestGetPasswordRetunsThePassword(t *testing.T) {
 func TestListItemTitlesReturnItemTitles(t *testing.T) {
 	testDataFilePath, _ := testUtils.GetTestDataFilePath("op_list_1.json")
 	expectedTitles := []string{"some title 1", "some title 2"}
-	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
+	testFileCatScript := tempFiles.NewTempCat(testDataFilePath)
 	err := testFileCatScript.Run(func(scriptPath string) {
 		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 		accountStorage := accountStorage.NewInMemoryAccountStorage("")
@@ -136,7 +141,7 @@ func TestListItemTitlesReturnItemTitles(t *testing.T) {
 func TestListAccountsReturnAccounts(t *testing.T) {
 	testDataFilePath, _ := testUtils.GetTestDataFilePath("op_accounts_list_1.json")
 	expectedAccounts := []string{"team_foo", "my"}
-	testFileCatScript := tempFiles.NewTempScript("#!/bin/sh \ncat " + testDataFilePath)
+	testFileCatScript := tempFiles.NewTempCat(testDataFilePath)
 	err := testFileCatScript.Run(func(scriptPath string) {
 		opClient := OpClient{ path: scriptPath }
 		accounts, err := opClient.ListAccounts()

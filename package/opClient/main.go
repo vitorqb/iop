@@ -1,12 +1,9 @@
 package opClient
 
 import (
-	"bytes"
 	"encoding/json"
 	"log"
-	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
@@ -15,16 +12,6 @@ import (
 )
 
 const DEFAULT_CLIENT = "/usr/bin/op"
-
-// Runs a command leaving the stdin and stderr of the current execution.
-func runProxyCmd(cmd *exec.Cmd) ([]byte, error) {
-	var stdout bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	err := cmd.Run()
-	return stdout.Bytes(), err
-}
 
 type IOpClient interface {
 	EnsureLoggedIn()
@@ -97,11 +84,16 @@ func (client OpClient) EnsureLoggedIn() {
 }
 
 func (client OpClient) GetPassword(itemRef string) string {
-	result, err := client.runWithToken("item", "get", itemRef, "--field", "label=password")
+	result, err := client.runWithToken("item", "get", itemRef, "--field", "label=password", "--format", "json")
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during item get", err)
 	}
-	return strings.Trim(string(result), "\n")
+	var field passwordField
+	err = json.Unmarshal(result, &field)
+	if err != nil {
+		client.sys.Crash("Something wen't wrong when parsing the json response for the password", err)
+	}
+	return field.Value
 }
 
 func (client OpClient) ListItemTitles() []string {
