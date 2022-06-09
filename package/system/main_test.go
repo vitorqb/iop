@@ -9,7 +9,7 @@ import (
 
 func TestAskUserToSelectStringReturnsSelected(t *testing.T) {
 	err := tempFiles.NewTempScript("#!/bin/sh \nhead -n1").Run(func(scriptPath string) {
-		system := System{userSelectProgram: scriptPath}
+		system := System{userSelectProgram: []string{scriptPath}}
 		result, err := system.AskUserToSelectString([]string{"atitle"})
 		assert.Nil(t, err)
 		assert.Equal(t, "atitle", result)
