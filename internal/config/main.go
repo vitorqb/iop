@@ -12,6 +12,7 @@ var CONFIG_NAME = "iop"
 // A struct containing all global configuration
 type config struct {
 	DmenuCommand []string `mapstructure:"DmenuCommand"`
+	PinEntryCommand string `mapstructure:"PinEntryCommand"`
 }
 
 // Global instances, populated by the load methods
@@ -32,6 +33,14 @@ func loadViper(cmd *cobra.Command, configPath string, configName string) (*viper
 		return nil, err
 	}
 	aViper.SetDefault("DmenuCommand", []string{"dmenu"})
+
+	// Pinenry config
+	cmd.PersistentFlags().StringP("pinentry", "", "", "pinentry command to use to query user for pin.")
+	err = aViper.BindPFlag("PinEntryCommand", cmd.PersistentFlags().Lookup("pinentry"))
+	if err != nil {
+		return nil, err
+	}
+	aViper.SetDefault("PinEntryCommand", "pinentry")
 
 	// Return
 	globalViper = aViper

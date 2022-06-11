@@ -1,1 +1,2 @@
 DmenuCommand: ["dmenu", "--command"]
+PinEntryCommand: ["pinentry-qt"]
