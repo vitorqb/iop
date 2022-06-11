@@ -1,6 +1,7 @@
 package opClient
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -153,4 +154,39 @@ func TestListAccountsReturnAccounts(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}	
+}
+
+func TestIsLoggedInTrue(t *testing.T) {
+
+	testCases := []struct{
+		ExitCode string
+		ExpectedResult bool
+	}{
+		{"0", true},
+		{"1", false},
+	}
+
+	for _, testCase := range testCases {
+		// ARRANGE
+		script := fmt.Sprintf("#!/bin/bash\nexit %s", testCase.ExitCode)
+		tokenStorage := tokenStorage.NewInMemoryTokenStorage("foo")
+		accountStorage := accountStorage.NewInMemoryAccountStorage("bar")
+		err := tempFiles.NewTempScript(script).Run(func(path string) {
+			opClient := OpClient{
+				tokenStorage:   &tokenStorage,
+				accountStorage: &accountStorage,
+				path:           path,
+				commandRunner:  commandRunner.CommandRunner{},
+			}
+
+			// ACT
+			result, err := opClient.isLoggedIn()
+
+			// ASSERT
+			assert.Nil(t, err)
+			assert.Equal(t, testCase.ExpectedResult, result, "%+v", testCase)
+		})
+		assert.Nil(t, err)		
+	}
+
 }

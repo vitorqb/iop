@@ -64,6 +64,33 @@ func (client OpClient) getCurrentAccount() (string, error) {
 	return account, nil
 }
 
+func (client OpClient) isLoggedIn() (bool, error) {
+	token, err := client.getToken()
+	if err != nil {
+		client.sys.Crash("Something wen't wrong when recovering the token", err)
+	}
+	account, err := client.getCurrentAccount()
+	if err != nil {
+		client.sys.Crash("Something wen't wrong when recovering the account", err)
+	}	
+	_, err = client.commandRunner.Run(client.path, "whoami", "--session", token, "--account", account)
+
+	// Whoami returns no error -> we are logged in
+	if err == nil {
+		return true, nil
+	}
+
+	// Whoami returns error 1 -> logged out
+	if exitErr, ok := err.(*exec.ExitError); ok {
+		if exitErr.ExitCode() == 1 {
+			return false, nil
+		}
+	}
+
+	// Unknown error
+	return false, err
+}
+
 func (client OpClient) EnsureLoggedIn() {
 	token, err := client.getToken()
 	if err != nil {
