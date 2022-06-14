@@ -28,14 +28,26 @@ func (c CommandRunner) RunAsProxy(arg0 string, args ...string) ([]byte, error) {
 
 // Mocked implementation for tests
 type MockedCommandRunner struct {
+	CallCount   int
 	LastArgs    []string
 	ReturnValue string
+	Error       error
+}
+func NewMockedCommandRunner(returnValue string, error error) MockedCommandRunner {
+	return MockedCommandRunner {
+		CallCount: 0,
+		LastArgs: []string{},
+		Error: error,
+		ReturnValue: returnValue,
+	}
 }
 func (c *MockedCommandRunner) Run(arg0 string, args ...string) ([]byte, error) {
+	c.CallCount++
 	c.LastArgs = append([]string{arg0}, args...)
-	return []byte(c.ReturnValue), nil
+	return []byte(c.ReturnValue), c.Error
 }
 func (c *MockedCommandRunner) RunAsProxy(arg0 string, args ...string) ([]byte, error) {
+	c.CallCount++
 	c.LastArgs = append([]string{arg0}, args...)
-	return []byte(c.ReturnValue), nil
+	return []byte(c.ReturnValue), c.Error
 }

@@ -2,6 +2,7 @@ package opClient
 
 import (
 	"fmt"
+	"os/exec"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,7 @@ func TestNewCreatesANewClientInstance(t *testing.T) {
 	sys := system.NewMock()
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 	accountStorage := accountStorage.NewInMemoryAccountStorage("")
-	commandRunner := commandRunner.MockedCommandRunner{ReturnValue: ""}
+	commandRunner := commandRunner.NewMockedCommandRunner("", nil)
 	opClient := New(&sys, &tokenStorage, &accountStorage, &commandRunner)
 	if opClient.path != DEFAULT_CLIENT {
 		t.Fatal("Unexpected path")
@@ -37,22 +38,41 @@ func TestRunWithTokenAppendsToken(t *testing.T) {
 	assert.Equal(t, string(result), "--session FOO bar\n")
 }
 
+func TestEnsureLoggedInReturnsTrueIfAlreadyLoggedIn(t *testing.T) {
+	// The mocked cmd runner returns `nil` as error, which is simulates being
+	// logged in for `whoami` command.
+	commandRunner := commandRunner.NewMockedCommandRunner("", nil)
+	opClient := NewTestOpClient(WithCommandRunner(&commandRunner))
+	opClient.EnsureLoggedIn()
+	assert.Equal(t, commandRunner.CallCount, 1)
+}
+
+func TestEnsureLoggedInCallsLoginIfNotLoggedIn(t *testing.T) {
+	// The mocked cmd runner returns exit 1 as error, which is
+	// simulates NOT being logged in for `whoami` command.
+	exitOneErr := exec.Command("exit", "1").Run()
+	commandRunner := commandRunner.NewMockedCommandRunner("", exitOneErr)
+	opClient := NewTestOpClient(WithCommandRunner(&commandRunner))
+	opClient.EnsureLoggedIn()
+	assert.Equal(t, commandRunner.CallCount, 2)
+}
+
 func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
-	err := tempFiles.NewTempScript("#!/bin/sh \necho -n 123").Run(func(scriptPath string) {
-		tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
-		opClient := NewTestOpClient(
-			WithTokenStorage(&tokenStorage),
-			WithPath(scriptPath),
-			WithCommandRunner(commandRunner.CommandRunner{}),
-		)
-		opClient.EnsureLoggedIn()
-		token, _ := opClient.getToken()
-		assert.Equal(t, token, "123")
-		assert.Equal(t, tokenStorage.Token, "123")
-	})
-	if err != nil {
-		t.Error(err)
-	}
+	templateData := struct{
+		WhoAmIExitCode string
+		Body string
+	}{"1", "echo -n 123"}
+	scriptPath := testUtils.RenderTemplateTestFile(t, "mocked_whoami_script.sh", templateData)
+	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
+	opClient := NewTestOpClient(
+		WithTokenStorage(&tokenStorage),
+		WithPath(scriptPath),
+		WithCommandRunner(commandRunner.CommandRunner{}),
+	)
+	opClient.EnsureLoggedIn()
+	token, _ := opClient.getToken()
+	assert.Equal(t, token, "123")
+	assert.Equal(t, tokenStorage.Token, "123")
 }
 
 func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
@@ -73,9 +93,12 @@ func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
 }
 
 func TestEnsureLoggedInRunsCorrectCommand(t *testing.T) {
+	// The mocked cmd runner returns exit 1 as error, which is
+	// simulates NOT being logged in for `whoami` command.
+	exitOneErr := exec.Command("exit", "1").Run()
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("token")
 	accountStorage := accountStorage.NewInMemoryAccountStorage("account")
-	commandRunner := commandRunner.MockedCommandRunner{ReturnValue: ""}
+	commandRunner := commandRunner.NewMockedCommandRunner("", exitOneErr)
 	opClient := NewTestOpClient(
 		WithTokenStorage(&tokenStorage),
 		WithAccountStorage(&accountStorage),

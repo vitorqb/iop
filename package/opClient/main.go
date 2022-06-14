@@ -99,7 +99,14 @@ func (client OpClient) EnsureLoggedIn() {
 	account, err := client.getCurrentAccount()
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the account", err)
-	}	
+	}
+	isLoggedIn, err := client.isLoggedIn()
+	if err != nil {
+		client.sys.Crash("Failed to determine if was logged in", err)
+	}
+	if isLoggedIn {
+		return
+	}
 	result, err := client.commandRunner.RunAsProxy(client.path, "signin", "--raw", "--session",  token, "--account", account)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
