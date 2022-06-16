@@ -64,7 +64,7 @@ func (client OpClient) getCurrentAccount() (string, error) {
 	return account, nil
 }
 
-func (client OpClient) EnsureLoggedIn() {
+func (client OpClient) isLoggedIn() (bool, error) {
 	token, err := client.getToken()
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the token", err)
@@ -73,7 +73,41 @@ func (client OpClient) EnsureLoggedIn() {
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the account", err)
 	}	
-	result, err := client.commandRunner.RunAsProxy(client.path, "signin", "--raw", "--session",  token, "--account", account)
+	_, err = client.commandRunner.Run(client.path, "whoami", "--session", token, "--account", account)
+
+	// Whoami returns no error -> we are logged in
+	if err == nil {
+		return true, nil
+	}
+
+	// Whoami returns error 1 -> logged out
+	if exitErr, ok := err.(*exec.ExitError); ok {
+		if exitErr.ExitCode() == 1 {
+			return false, nil
+		}
+	}
+
+	// Unknown error
+	return false, err
+}
+
+func (client OpClient) EnsureLoggedIn() {
+	account, err := client.getCurrentAccount()
+	if err != nil {
+		client.sys.Crash("Something wen't wrong when recovering the account", err)
+	}
+	isLoggedIn, err := client.isLoggedIn()
+	if err != nil {
+		client.sys.Crash("Failed to determine if was logged in", err)
+	}
+	if isLoggedIn {
+		return
+	}
+	pin, err := client.sys.AskUserForPin("Enter your 1P password: ")
+	if err != nil {
+		client.sys.Crash("Something wen't wrong querying user for pin", err)
+	}
+	result, err := client.commandRunner.RunWithStdin(pin, client.path, "signin", "--raw", "--account", account)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
 	}

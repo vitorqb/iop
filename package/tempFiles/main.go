@@ -3,6 +3,7 @@ package tempFiles
 import (
 	"io/ioutil"
 	"os"
+	"testing"
 )
 
 // Allows user to run a function with a temporary file path
@@ -50,6 +51,34 @@ func (t tempScript) Run(f func(path string)) error {
 
 func NewTempScript(body string) tempScript {
 	return tempScript{body: body}
+}
+
+// TODO Migrate all tests to use this
+func NewTestTempScript(t *testing.T, body string) string {
+	file, err := ioutil.TempFile("", "test-file")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Cleanup(func() {
+		err := os.Remove(file.Name())
+		if err != nil {
+			t.Error(err)
+		}
+		
+	})
+	_, err = file.WriteString(body)
+	if err != nil {
+		t.Error(err)
+	}
+	err = file.Close()
+	if err != nil {
+		t.Error(err)
+	}
+	err = os.Chmod(file.Name(), 0777)
+	if err != nil {
+		t.Error(err)
+	}
+	return file.Name()
 }
 
 func NewTempCat(fileToCat string) tempScript {

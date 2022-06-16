@@ -1,5 +1,5 @@
 #!/bin/bash
-USAGE="$0"' [-h] [-t testname]
+USAGE="$0"' [-h] [-v] [-t testname]
 Runs tests for the project.
 
 -h)
@@ -7,6 +7,9 @@ Runs tests for the project.
 
 -t testname)
   Runs only testname.
+
+-v)
+  Verbose (show logs)
 '
 
 # Import utils.sh
@@ -15,9 +18,10 @@ source ${SCRIPT_DIR}/utils.sh
 
 # Defaults
 TESTNAME=""
+VERBOSE=0
 
 # CLI options parsing
-SHORT='ht:'
+SHORT='ht:v'
 OPTS="$(getopt --options $SHORT --name "$0" -- "$@")"
 ! [ "$?" = 0 ] && echo "$USAGE" 1>&2 && exit 1
 while [[ "$#" -gt 0 ]]
@@ -30,6 +34,10 @@ do
         -t)
             TESTNAME="$2"
             shift
+            shift
+            ;;
+        -v)
+            VERBOSE=1
             shift
             ;;
         *)
@@ -47,5 +55,9 @@ EXTRA_ARGS=( )
 if [ ! -z $TESTNAME ]
 then
     EXTRA_ARGS+=( "-run" $TESTNAME )
+fi
+if [ $VERBOSE = 1 ]
+then
+    EXTRA_ARGS+=( "-v" )
 fi
 run go test ./... ${EXTRA_ARGS[@]}
