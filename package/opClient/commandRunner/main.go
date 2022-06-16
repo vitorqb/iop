@@ -2,6 +2,7 @@ package commandRunner
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"os/exec"
 )
@@ -9,12 +10,35 @@ import (
 type ICommandRunner interface {
 	Run(arg0 string, args ...string) ([]byte, error)
 	RunAsProxy(arg0 string, args ...string)        ([]byte, error) // Runs leaving stdin and stdout from parent
+	RunWithStdin(stdin string, arg0 string, args ...string) ([]byte, error) // Runs passing a string as stdin
 }
 
 type CommandRunner struct {}
 func (c CommandRunner) Run(arg0 string, args ...string) ([]byte, error) {
 	bytes, err := exec.Command(arg0, args...).Output()
 	return bytes, err
+}
+func (c CommandRunner) RunWithStdin(stdin string, arg0 string, args ...string) ([]byte, error) {
+	cmd := exec.Command(arg0, args...)
+	var stdout bytes.Buffer
+	cmd.Stdout = &stdout
+	stdinPipe, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	err = cmd.Start()
+	if err != nil {
+		return nil, err
+	}
+	_, err = io.WriteString(stdinPipe, stdin + "\n")
+	if err != nil {
+		return nil, err
+	}
+	err = cmd.Wait()
+	if err != nil {
+		return nil, err
+	}
+	return stdout.Bytes(), err
 }
 func (c CommandRunner) RunAsProxy(arg0 string, args ...string) ([]byte, error) {
 	cmd := exec.Command(arg0, args...)
@@ -47,7 +71,8 @@ func (c *MockedCommandRunner) Run(arg0 string, args ...string) ([]byte, error) {
 	return []byte(c.ReturnValue), c.Error
 }
 func (c *MockedCommandRunner) RunAsProxy(arg0 string, args ...string) ([]byte, error) {
-	c.CallCount++
-	c.LastArgs = append([]string{arg0}, args...)
-	return []byte(c.ReturnValue), c.Error
+	return c.Run(arg0, args...)
+}
+func (c *MockedCommandRunner) RunWithStdin(stdin string, arg0 string, args ...string) ([]byte, error) {
+	return c.Run(arg0, args...)
 }

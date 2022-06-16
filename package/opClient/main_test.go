@@ -106,7 +106,7 @@ func TestEnsureLoggedInRunsCorrectCommand(t *testing.T) {
 		WithCommandRunner(&commandRunner),
 	)
 	opClient.EnsureLoggedIn()
-	assert.Equal(t, commandRunner.LastArgs, []string{"echo", "signin", "--raw", "--session", "token", "--account", "account"})
+	assert.Equal(t, commandRunner.LastArgs, []string{"echo", "signin", "--raw", "--account", "account"})
 }
 
 func TestGetPasswordRetunsThePassword(t *testing.T) {

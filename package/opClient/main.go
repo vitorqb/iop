@@ -92,10 +92,6 @@ func (client OpClient) isLoggedIn() (bool, error) {
 }
 
 func (client OpClient) EnsureLoggedIn() {
-	token, err := client.getToken()
-	if err != nil {
-		client.sys.Crash("Something wen't wrong when recovering the token", err)
-	}
 	account, err := client.getCurrentAccount()
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the account", err)
@@ -107,12 +103,11 @@ func (client OpClient) EnsureLoggedIn() {
 	if isLoggedIn {
 		return
 	}
-	_, err = client.sys.AskUserForPin("Enter your 1P password: ")
+	pin, err := client.sys.AskUserForPin("Enter your 1P password: ")
 	if err != nil {
 		client.sys.Crash("Something wen't wrong querying user for pin", err)
 	}
-
-	result, err := client.commandRunner.RunAsProxy(client.path, "signin", "--raw", "--session",  token, "--account", account)
+	result, err := client.commandRunner.RunWithStdin(pin, client.path, "signin", "--raw", "--account", account)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
 	}
