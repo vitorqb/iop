@@ -12,7 +12,7 @@ var CONFIG_NAME = "iop"
 // A struct containing all global configuration
 type config struct {
 	DmenuCommand []string `mapstructure:"DmenuCommand"`
-	PinEntryCommand string `mapstructure:"PinEntryCommand"`
+	PinEntryCommand []string `mapstructure:"PinEntryCommand"`
 }
 
 // Global instances, populated by the load methods

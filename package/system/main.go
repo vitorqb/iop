@@ -1,8 +1,10 @@
 package system
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -21,6 +23,7 @@ type ISystem interface {
 // A real system implementation
 type System struct {
 	userSelectProgram []string
+	pinentryProgram []string
 }
 
 func (s *System) Crash(errMsg string, err error) {
@@ -38,13 +41,54 @@ func (s *System) AskUserToSelectString(options []string) (string, error) {
 	return strings.Trim(string(resultInBytes), "\n"), err
 }
 func (s *System) AskUserForPin(prompt string) (string, error) {
-	// !!!! TODO
-	return "", nil
+	pinentry := exec.Command(s.pinentryProgram[0], s.pinentryProgram[1:]...)
+	stdoutReader, stdoutWriter := io.Pipe()
+	pinentry.Stdout = stdoutWriter
+	stdin, err := pinentry.StdinPipe()
+	if err != nil {
+		return "", err
+	}
+	err = pinentry.Start()
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		err := stdoutWriter.Close()
+		if err != nil {
+			log.Fatal("Error closing stdoutWrier: %w", err)
+		}
+		err = stdoutReader.Close()
+		if err != nil {
+			log.Fatal("Error closing stdoutReader: %w", err)
+		}
+		err = pinentry.Process.Kill()
+		if err != nil {
+			log.Fatal("Error closing pinenry: %w", err)
+		}
+
+	}()
+	_, err = io.WriteString(stdin, "SETPOMPT " + prompt + "\n")
+	if err != nil {
+		return "", err
+	}
+	_, err = io.WriteString(stdin, "GETPIN\n")
+	if err != nil {
+		return "", err
+	}
+	scanner := bufio.NewScanner(stdoutReader)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "D") {
+			return strings.Trim(line[2:], "\n"), nil
+		}
+	}
+	return "", errors.New("Failed to query usr for pin!")
 }
 func New() System {
 	config := config.GetConfig()
 	return System{
 		userSelectProgram: config.DmenuCommand,
+		pinentryProgram: config.PinEntryCommand,
 	}
 }
 

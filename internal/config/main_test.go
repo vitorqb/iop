@@ -25,7 +25,7 @@ func TestLoadConfigReturnsProperConfig(t *testing.T) {
 	assert.Nil(t, err)
 	expectedConfig := config{
 		DmenuCommand: []string{"dmenu", "--command"},
-		PinEntryCommand: "pinentry-qt",
+		PinEntryCommand: []string{"pinentry-qt"},
 	}
 	assert.Equal(t, aConfig, expectedConfig)
 }
@@ -38,7 +38,7 @@ func TestLoadConfigReturnsDefaultValues(t *testing.T) {
 	assert.Nil(t, err)
 	expectedConfig := config{
 		DmenuCommand: []string{"dmenu"},
-		PinEntryCommand: "pinentry",
+		PinEntryCommand: []string{"pinentry"},
 	}
 	assert.Equal(t, aConfig, expectedConfig)	
 }
