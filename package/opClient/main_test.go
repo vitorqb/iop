@@ -76,7 +76,7 @@ func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 }
 
 func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
-	mockSystem := system.NewMock()
+	mockSystem := system.NewMock(system.WMockPin("PIN"))
 	err := tempFiles.NewTempScript("#!/bin/bash \nexit 1").Run(func(scriptPath string) {
 		opClient := NewTestOpClient(
 			WithSystem(&mockSystem),

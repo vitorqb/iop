@@ -2,6 +2,7 @@ package system
 
 import (
 	"bytes"
+	"errors"
 	"log"
 	"os"
 	"os/exec"
@@ -14,6 +15,7 @@ import (
 type ISystem interface {
 	Crash(errMsg string, err error)
 	AskUserToSelectString(options []string) (string, error)
+	AskUserForPin(prompt string) (string, error)
 }
 
 // A real system implementation
@@ -35,6 +37,10 @@ func (s *System) AskUserToSelectString(options []string) (string, error) {
 	resultInBytes, err := dmenu.Output()
 	return strings.Trim(string(resultInBytes), "\n"), err
 }
+func (s *System) AskUserForPin(prompt string) (string, error) {
+	// !!!! TODO
+	return "", nil
+}
 func New() System {
 	config := config.GetConfig()
 	return System{
@@ -47,6 +53,7 @@ type MockSystem struct {
 	CrashCallCount  int
 	LastCrashErr    error
 	LastCrashErrMsg string
+	Pin             string
 }
 
 func (s *MockSystem) Crash(errMsg string, err error) {
@@ -57,6 +64,22 @@ func (s *MockSystem) Crash(errMsg string, err error) {
 func (s *MockSystem) AskUserToSelectString(options []string) (string, error) {
 	return options[0], nil
 }
-func NewMock() MockSystem {
-	return MockSystem{CrashCallCount: 0}
+func (s *MockSystem) AskUserForPin(prompt string) (string, error) {
+	if (s.Pin == "") {
+		return "", errors.New("[MockSystem] Failed to get pin.")
+	}
+	return s.Pin, nil
+}
+type MockOption func(s *MockSystem)
+func WMockPin(pin string) MockOption {
+	return func(s *MockSystem) {
+		s.Pin = pin
+	}
+}
+func NewMock(mockOptions ...MockOption) MockSystem {
+	mockSystem := MockSystem{CrashCallCount: 0}
+	for _, mockOption := range mockOptions {
+		mockOption(&mockSystem)
+	}
+	return mockSystem
 }
