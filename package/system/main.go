@@ -67,7 +67,7 @@ func (s *System) AskUserForPin(prompt string) (string, error) {
 		}
 
 	}()
-	_, err = io.WriteString(stdin, "SETPOMPT " + prompt + "\n")
+	_, err = io.WriteString(stdin, "SETPROMPT " + prompt + "\n")
 	if err != nil {
 		return "", err
 	}
