@@ -38,19 +38,3 @@ func New(filePath string) (storage.ISimpleStorage , error) {
 	}
 	return storage.NewFileSimpleStorage(filePath), nil
 }
-
-// An implementation that stores the token in memory (usefull 4 tests)
-type inMemoryTokenStorage struct {
-	Token string
-}
-
-func (s *inMemoryTokenStorage) Put(token string) error {
-	s.Token = token
-	return nil
-}
-func (s *inMemoryTokenStorage) Get() (string, error) {
-	return s.Token, nil
-}
-func NewInMemoryTokenStorage(initialToken string) inMemoryTokenStorage {
-	return inMemoryTokenStorage{Token: initialToken}
-}

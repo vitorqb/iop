@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
+	"github.com/vitorqb/iop/package/storage"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tempFiles"
 	"github.com/vitorqb/iop/package/testUtils"
-	"github.com/vitorqb/iop/package/tokenStorage"
 )
 
 func TestNewCreatesANewClientInstance(t *testing.T) {
 	sys := system.NewMock()
-	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
+	tokenStorage := storage.NewInMemoryTokenStorage("")
 	accountStorage := accountStorage.NewInMemoryAccountStorage("")
 	commandRunner := commandRunner.NewMockedCommandRunner("", nil)
 	opClient := New(&sys, &tokenStorage, &accountStorage, &commandRunner)
@@ -26,7 +26,7 @@ func TestNewCreatesANewClientInstance(t *testing.T) {
 }
 
 func TestRunWithTokenAppendsToken(t *testing.T) {
-	tokenStorage := tokenStorage.NewInMemoryTokenStorage("FOO")
+	tokenStorage := storage.NewInMemoryTokenStorage("FOO")
 	commandRunner := commandRunner.CommandRunner{}
 	opClient := NewTestOpClient(
 		WithTokenStorage(&tokenStorage),
@@ -63,7 +63,7 @@ func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 		Body string
 	}{"1", "echo -n 123"}
 	scriptPath := testUtils.RenderTemplateTestFile(t, "mocked_whoami_script.sh", templateData)
-	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
+	tokenStorage := storage.NewInMemoryTokenStorage("")
 	opClient := NewTestOpClient(
 		WithTokenStorage(&tokenStorage),
 		WithPath(scriptPath),
@@ -72,7 +72,7 @@ func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 	opClient.EnsureLoggedIn()
 	token, _ := opClient.getToken()
 	assert.Equal(t, token, "123")
-	assert.Equal(t, tokenStorage.Token, "123")
+	assert.Equal(t, tokenStorage.Value, "123")
 }
 
 func TestEnsureLoggedInExitsIfCmdFails(t *testing.T) {
@@ -96,7 +96,7 @@ func TestEnsureLoggedInRunsCorrectCommand(t *testing.T) {
 	// The mocked cmd runner returns exit 1 as error, which is
 	// simulates NOT being logged in for `whoami` command.
 	exitOneErr := exec.Command("exit", "1").Run()
-	tokenStorage := tokenStorage.NewInMemoryTokenStorage("token")
+	tokenStorage := storage.NewInMemoryTokenStorage("token")
 	accountStorage := accountStorage.NewInMemoryAccountStorage("account")
 	commandRunner := commandRunner.NewMockedCommandRunner("", exitOneErr)
 	opClient := NewTestOpClient(

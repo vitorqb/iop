@@ -5,7 +5,6 @@ import (
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
 	"github.com/vitorqb/iop/package/storage"
 	"github.com/vitorqb/iop/package/system"
-	"github.com/vitorqb/iop/package/tokenStorage"
 )
 
 // Helper builder for OpClient
@@ -43,7 +42,7 @@ func WithSystem(s system.ISystem) opTestClientBuilder {
 	}
 }
 func NewTestOpClient(builders ...opTestClientBuilder) OpClient {
-	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
+	tokenStorage := storage.NewInMemoryTokenStorage("")
 	mockSystem := system.NewMock()
 	accountStorage := accountStorage.NewInMemoryAccountStorage("")
 	commandRunner := commandRunner.MockedCommandRunner{ReturnValue: ""}
