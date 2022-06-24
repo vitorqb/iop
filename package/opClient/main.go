@@ -107,6 +107,7 @@ func (client OpClient) EnsureLoggedIn() {
 	if err != nil {
 		client.sys.Crash("Something wen't wrong querying user for pin", err)
 	}
+	_ = client.sys.NotifyUser("IOP", "Logging you in...")
 	result, err := client.commandRunner.RunWithStdin(pin, client.path, "signin", "--raw", "--account", account)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
@@ -115,6 +116,7 @@ func (client OpClient) EnsureLoggedIn() {
 	if err != nil {
 		log.Printf("WARNING: could not save token: %s\n", err)
 	}
+	_ = client.sys.NotifyUser("IOP", "Login successfull!")
 }
 
 func (client OpClient) GetPassword(itemRef string) string {
@@ -131,6 +133,7 @@ func (client OpClient) GetPassword(itemRef string) string {
 }
 
 func (client OpClient) ListItemTitles() []string {
+	_ = client.sys.NotifyUser("IOP", "Querying 1P for list of all items...")
 	var items, err = client.listItems()
 	if err != nil {
 		client.sys.Crash("Something went wrong recovering the list of items", err)

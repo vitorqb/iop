@@ -37,6 +37,11 @@ to be available. Look for `dmenu` in [Configuration](#configuration).
 In order to ask the user for a pin, `iop` requires `pinentry`, which
 usually comes with gnupg. Look for `pinentry` in [Configuration](#configuration).
 
+### [libnotify](https://gitlab.gnome.org/GNOME/libnotify)
+
+In order to send user notifications, we rely on the `notify-send`
+command which comes with `libnotify`.
+
 ## Usage
 
 ```shell
@@ -64,6 +69,9 @@ DmenuCommand: ["dmenu", "-i"]
 
 # Customize the pinentry command used to query the user for a pin.
 PinEntryCommand: ["pinentry-qt"]
+
+# Customize the program used for notify-send
+NotifySendCommand: "libnotify"
 ```
 
 ## Development
