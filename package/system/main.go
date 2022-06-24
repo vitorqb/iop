@@ -9,8 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/vitorqb/iop/internal/config"
 )
 
 // An interface to control the System
@@ -94,12 +92,15 @@ func (s *System) NotifyUser(title string, body string) error {
 	return err
 }
 
-func New() System {
-	config := config.GetConfig()
+func New(
+	userSelectProgram []string,
+	pinentryProgram []string,
+	notifySendProgram string,
+) System {
 	return System{
-		userSelectProgram: config.DmenuCommand,
-		pinentryProgram: config.PinEntryCommand,
-		notifySendProgram: config.NotifySendCommand,
+		userSelectProgram: userSelectProgram,
+		pinentryProgram: pinentryProgram,
+		notifySendProgram: notifySendProgram,
 	}
 }
 

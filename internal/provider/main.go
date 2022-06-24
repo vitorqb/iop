@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/vitorqb/iop/internal/config"
 	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
@@ -21,7 +22,12 @@ func getUserDir(system system.ISystem) string {
 }
 
 func System() system.ISystem {
-	system := system.New()
+	config := config.GetConfig()
+	system := system.New(
+		config.DmenuCommand,
+		config.PinEntryCommand,
+		config.NotifySendCommand,
+	)
 	return &system
 }
 
