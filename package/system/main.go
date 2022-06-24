@@ -29,6 +29,7 @@ type System struct {
 }
 
 func (s *System) Crash(errMsg string, err error) {
+	_ = s.NotifyUser("IOP ERROR! :(", errMsg)
 	log.Fatal(errMsg, " - ", err)
 	os.Exit(99)
 }

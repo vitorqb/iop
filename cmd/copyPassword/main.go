@@ -1,8 +1,6 @@
 package copyPassword
 
 import (
-	"log"
-
 	"github.com/atotto/clipboard"
 	"github.com/spf13/cobra"
 
@@ -41,8 +39,7 @@ func run(client opClient.IOpClient, itemRef string, system system.ISystem) {
 	if err != nil {
 		system.Crash("Something went wrong when writing to clipboard", err)
 	}
-	log.Println("Copied to clipboard!")
-
+	_ = system.NotifyUser("IOP", "The password has been saved to clipboard and is ready to be used :)")
 }
 
 func Setup(rootCmd *cobra.Command) {

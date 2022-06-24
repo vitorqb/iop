@@ -38,7 +38,7 @@ func run(
 	if err != nil {
 		system.Crash("Failed to store current account", err)
 	}
-	// !!!! TODO LOG SMTH TO THE USER (add to ISystem)
+	_ = system.NotifyUser("IOP", "Selected account: " + selectedAccount)
 }
 
 func Setup(rootCmd *cobra.Command) {
