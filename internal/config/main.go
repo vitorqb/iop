@@ -13,6 +13,7 @@ var CONFIG_NAME = "iop"
 type config struct {
 	DmenuCommand []string `mapstructure:"DmenuCommand"`
 	PinEntryCommand []string `mapstructure:"PinEntryCommand"`
+	NotifySendCommand string `mapstructure:"NotifySendCommand"`
 }
 
 // Global instances, populated by the load methods
@@ -35,12 +36,21 @@ func loadViper(cmd *cobra.Command, configPath string, configName string) (*viper
 	aViper.SetDefault("DmenuCommand", []string{"dmenu"})
 
 	// Pinenry config
-	cmd.PersistentFlags().StringP("pinentry", "", "", "pinentry command to use to query user for pin.")
+	cmd.PersistentFlags().StringArrayP("pinentry", "", []string{}, "pinentry command to use to query user for pin.")
 	err = aViper.BindPFlag("PinEntryCommand", cmd.PersistentFlags().Lookup("pinentry"))
 	if err != nil {
 		return nil, err
 	}
 	aViper.SetDefault("PinEntryCommand", "pinentry")
+
+	// notify-send config
+	cmd.PersistentFlags().StringP("notify-send-command", "", "", "notify-send command to send user notifications.")
+	err = aViper.BindPFlag("NotifySendCommand", cmd.PersistentFlags().Lookup("notify-send-command"))
+	if err != nil {
+		return nil, err
+	}
+	aViper.SetDefault("NotifySendCommand", "notify-send")
+	
 
 	// Return
 	globalViper = aViper

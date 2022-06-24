@@ -26,6 +26,7 @@ func TestLoadConfigReturnsProperConfig(t *testing.T) {
 	expectedConfig := config{
 		DmenuCommand: []string{"dmenu", "--command"},
 		PinEntryCommand: []string{"pinentry-qt"},
+		NotifySendCommand: "custom-notify-send",
 	}
 	assert.Equal(t, aConfig, expectedConfig)
 }
@@ -39,6 +40,7 @@ func TestLoadConfigReturnsDefaultValues(t *testing.T) {
 	expectedConfig := config{
 		DmenuCommand: []string{"dmenu"},
 		PinEntryCommand: []string{"pinentry"},
+		NotifySendCommand: "notify-send",
 	}
 	assert.Equal(t, aConfig, expectedConfig)	
 }

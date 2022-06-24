@@ -1,2 +1,3 @@
 DmenuCommand: ["dmenu", "--command"]
 PinEntryCommand: ["pinentry-qt"]
+NotifySendCommand: "custom-notify-send"
