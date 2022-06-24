@@ -5,7 +5,6 @@ import (
 	"log"
 	"os/exec"
 
-	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
 	"github.com/vitorqb/iop/package/storage"
 	"github.com/vitorqb/iop/package/system"
@@ -22,11 +21,11 @@ type IOpClient interface {
 
 // A client for the `op` (1password cli) program
 type OpClient struct {
-	tokenStorage  storage.ISimpleStorage
-	sys           system.ISystem
-	path          string
-	accountStorage  accountStorage.IAccountStorage
-	commandRunner commandRunner.ICommandRunner
+	tokenStorage   storage.ISimpleStorage
+	sys            system.ISystem
+	path           string
+	accountStorage storage.ISimpleStorage
+	commandRunner  commandRunner.ICommandRunner
 }
 
 func (client OpClient) getToken() (string, error) {
@@ -160,17 +159,17 @@ func (client OpClient) ListAccounts() ([]string, error) {
 }
 
 func New(
-	sys system.ISystem,
+	sys            system.ISystem,
 	tokenStorage   storage.ISimpleStorage,
-	accountStorage accountStorage.IAccountStorage,
-	commandRunner commandRunner.ICommandRunner,
+	accountStorage storage.ISimpleStorage,
+	commandRunner  commandRunner.ICommandRunner,
 ) *OpClient {
 	client := OpClient{
-		sys:          sys,
-		path:         DEFAULT_CLIENT,
-		tokenStorage: tokenStorage,
+		sys:            sys,
+		path:           DEFAULT_CLIENT,
+		tokenStorage:   tokenStorage,
 		accountStorage: accountStorage,
-		commandRunner: commandRunner,
+		commandRunner:  commandRunner,
 	}
 	return &client
 }

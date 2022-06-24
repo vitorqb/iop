@@ -9,11 +9,11 @@ import (
 
 // Helper builder for OpClient
 type opTestClientBUildOptions struct {
-	tokenStorage  storage.ISimpleStorage
-	sys           system.ISystem
-	path          string
-	accountStorage  accountStorage.IAccountStorage
-	commandRunner commandRunner.ICommandRunner
+	tokenStorage    storage.ISimpleStorage
+	sys             system.ISystem
+	path            string
+	accountStorage  storage.ISimpleStorage
+	commandRunner   commandRunner.ICommandRunner
 }
 type opTestClientBuilder func(o *opTestClientBUildOptions)
 func WithTokenStorage(t storage.ISimpleStorage) opTestClientBuilder {
@@ -31,9 +31,9 @@ func WithCommandRunner(c commandRunner.ICommandRunner) opTestClientBuilder {
 		o.commandRunner = c
 	}
 }
-func WithAccountStorage(a accountStorage.IAccountStorage) opTestClientBuilder {
+func WithAccountStorage(s storage.ISimpleStorage) opTestClientBuilder {
 	return func(o *opTestClientBUildOptions) {
-		o.accountStorage = a
+		o.accountStorage = s
 	}
 }
 func WithSystem(s system.ISystem) opTestClientBuilder {

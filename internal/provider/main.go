@@ -33,7 +33,7 @@ func TokenStorage(system system.ISystem) storage.ISimpleStorage {
 	return tokenStorage
 }
 
-func AccountStorage(system system.ISystem) accountStorage.IAccountStorage {
+func AccountStorage(system system.ISystem) storage.ISimpleStorage {
 	homeDir := getUserDir(system)
 	filePath := filepath.Join(homeDir, ".iop/currentAccount")
 	return accountStorage.New(filePath)
@@ -42,7 +42,7 @@ func AccountStorage(system system.ISystem) accountStorage.IAccountStorage {
 func OpClient(
 	sys system.ISystem,
 	tokenStorage   storage.ISimpleStorage,
-	accountStorage accountStorage.IAccountStorage,
+	accountStorage storage.ISimpleStorage,
 ) opClient.IOpClient {
 	commandRunner := commandRunner.CommandRunner{}
 	return opClient.New(sys, tokenStorage, accountStorage, commandRunner)

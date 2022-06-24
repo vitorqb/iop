@@ -1,31 +1,10 @@
 package accountStorage
 
-import "os"
+import "github.com/vitorqb/iop/package/storage"
 
-type IAccountStorage interface {
-	Put(account string) error
-	Get() (string, error)
-}
-
-type fileAccountStorage struct {
-	filePath string
-}
-// !!!! TODO Unify with tokenStorage
-func(f fileAccountStorage) Put(account string) error {
-	err := os.WriteFile(f.filePath, []byte(account), 0600)
-	return err
-}
-// !!!! TODO Unify with tokenStorage
-func(f fileAccountStorage) Get() (string, error) {
-	token, err := os.ReadFile(f.filePath)
-	if err != nil {
-		return "", nil
-	}
-	return string(token), nil
-}
-
-func New(filePath string) fileAccountStorage {
-	return fileAccountStorage{ filePath: filePath }
+// TODO Ensure we create parents if needed!
+func New(filePath string) storage.ISimpleStorage {
+	return storage.NewFileSimpleStorage(filePath)
 }
 
 // !!!! TODO Unify with tokenStorage

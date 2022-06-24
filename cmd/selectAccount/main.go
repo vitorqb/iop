@@ -4,8 +4,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/vitorqb/iop/internal/provider"
-	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient"
+	"github.com/vitorqb/iop/package/storage"
 	"github.com/vitorqb/iop/package/system"
 )
 
@@ -24,7 +24,7 @@ var selectAccountCmd = &cobra.Command{
 func run(
 	client opClient.IOpClient,
 	system system.ISystem,
-	accountStorage accountStorage.IAccountStorage,
+	accountStorage storage.ISimpleStorage,
 ) {
 	allAccounts, err := client.ListAccounts()
 	if err != nil || len(allAccounts) == 0 {
