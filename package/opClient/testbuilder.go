@@ -3,20 +3,21 @@ package opClient
 import (
 	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
+	"github.com/vitorqb/iop/package/storage"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tokenStorage"
 )
 
 // Helper builder for OpClient
 type opTestClientBUildOptions struct {
-	tokenStorage tokenStorage.ITokenStorage
+	tokenStorage  storage.ISimpleStorage
 	sys           system.ISystem
 	path          string
 	accountStorage  accountStorage.IAccountStorage
 	commandRunner commandRunner.ICommandRunner
 }
 type opTestClientBuilder func(o *opTestClientBUildOptions)
-func WithTokenStorage(t tokenStorage.ITokenStorage) opTestClientBuilder {
+func WithTokenStorage(t storage.ISimpleStorage) opTestClientBuilder {
 	return func(o *opTestClientBUildOptions) {
 		o.tokenStorage = t
 	}

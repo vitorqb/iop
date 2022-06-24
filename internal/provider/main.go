@@ -7,6 +7,7 @@ import (
 	"github.com/vitorqb/iop/package/accountStorage"
 	"github.com/vitorqb/iop/package/opClient"
 	"github.com/vitorqb/iop/package/opClient/commandRunner"
+	"github.com/vitorqb/iop/package/storage"
 	"github.com/vitorqb/iop/package/system"
 	"github.com/vitorqb/iop/package/tokenStorage"
 )
@@ -24,7 +25,7 @@ func System() system.ISystem {
 	return &system
 }
 
-func TokenStorage(system system.ISystem) tokenStorage.ITokenStorage {
+func TokenStorage(system system.ISystem) storage.ISimpleStorage {
 	tokenStorage, err := tokenStorage.New("")
 	if err != nil {
 		system.Crash("Could not initialize opClient", err)
@@ -40,7 +41,7 @@ func AccountStorage(system system.ISystem) accountStorage.IAccountStorage {
 
 func OpClient(
 	sys system.ISystem,
-	tokenStorage tokenStorage.ITokenStorage,
+	tokenStorage   storage.ISimpleStorage,
 	accountStorage accountStorage.IAccountStorage,
 ) opClient.IOpClient {
 	commandRunner := commandRunner.CommandRunner{}

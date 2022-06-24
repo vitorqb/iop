@@ -3,6 +3,8 @@ package tokenStorage
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/vitorqb/iop/package/storage"
 )
 
 // Helper functions for default implementations
@@ -22,44 +24,19 @@ func createParents(filePath string) error {
 	return err
 }
 
-// An interface capable of putting and getting a token
-type ITokenStorage interface {
-	Put(token string) error
-	Get() (string, error)
-}
-
-// An implementation that stores the token in a file
-type fileTokenStorage struct {
-	filePath string
-}
-
-func (f fileTokenStorage) Put(token string) error {
-	err := os.WriteFile(f.filePath, []byte(token), 0600)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func (f fileTokenStorage) Get() (string, error) {
-	token, err := os.ReadFile(f.filePath)
-	if err != nil {
-		return "", nil
-	}
-	return string(token), nil
-}
-func New(filePath string) (fileTokenStorage, error) {
+func New(filePath string) (storage.ISimpleStorage , error) {
 	if filePath == "" {
 		filePath1, err := getDefaultTokenFile()
 		if err != nil {
-			return fileTokenStorage{}, err
+			return nil, err
 		}
 		filePath = filePath1
 	}
 	err := createParents(filePath)
 	if err != nil {
-		return fileTokenStorage{}, err
+		return nil, err
 	}
-	return fileTokenStorage{filePath: filePath}, nil
+	return storage.NewFileSimpleStorage(filePath), nil
 }
 
 // An implementation that stores the token in memory (usefull 4 tests)
