@@ -18,12 +18,14 @@ type ISystem interface {
 	Crash(errMsg string, err error)
 	AskUserToSelectString(options []string) (string, error)
 	AskUserForPin(prompt string) (string, error)
+	NotifyUser(title string, body string) error
 }
 
 // A real system implementation
 type System struct {
 	userSelectProgram []string
 	pinentryProgram []string
+	notifySendProgram string
 }
 
 func (s *System) Crash(errMsg string, err error) {
@@ -84,20 +86,33 @@ func (s *System) AskUserForPin(prompt string) (string, error) {
 	}
 	return "", errors.New("Failed to query usr for pin!")
 }
+
+func (s *System) NotifyUser(title string, body string) error {
+	cmd := exec.Command(s.notifySendProgram, title, body)
+	err := cmd.Run()
+	return err
+}
+
 func New() System {
 	config := config.GetConfig()
 	return System{
 		userSelectProgram: config.DmenuCommand,
 		pinentryProgram: config.PinEntryCommand,
+		notifySendProgram: config.NotifySendCommand,
 	}
 }
 
 // A mock system for test
+type lastNotifyArgs struct {
+	Title string
+	Body string
+}
 type MockSystem struct {
 	CrashCallCount  int
 	LastCrashErr    error
 	LastCrashErrMsg string
 	Pin             string
+	LastNotifyArgs  lastNotifyArgs
 }
 
 func (s *MockSystem) Crash(errMsg string, err error) {
@@ -113,6 +128,10 @@ func (s *MockSystem) AskUserForPin(prompt string) (string, error) {
 		return "", errors.New("[MockSystem] Failed to get pin.")
 	}
 	return s.Pin, nil
+}
+func (s *MockSystem) NotifyUser(title string, body string) error {
+	s.LastNotifyArgs = lastNotifyArgs{title, body}
+	return nil
 }
 type MockOption func(s *MockSystem)
 func WMockPin(pin string) MockOption {

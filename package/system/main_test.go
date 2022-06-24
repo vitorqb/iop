@@ -1,6 +1,8 @@
 package system
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,4 +29,26 @@ func TestAskForUserPinHappyPath(t *testing.T) {
 	output, err := system.AskUserForPin("")
 	assert.Nil(t, err)
 	assert.Equal(t, "FOO", output)
+}
+
+func TestNotifyUserHappyPath(t *testing.T) {
+	// TODO - Extract tempfile to tempFiles and remove old implementation
+	tempFile, err := ioutil.TempFile("", "*")
+	t.Cleanup(func() {
+		tempFile.Close()
+		os.Remove(tempFile.Name())
+	})
+	assert.Nil(t, err)
+	fakeNotifySend := testUtils.RenderTemplateTestFile(
+		t,
+		"fakeNotifySend.sh",
+		struct{OutputFile string}{tempFile.Name()},
+	)
+	system := System{notifySendProgram: fakeNotifySend}
+	err = system.NotifyUser("A title", "A body")
+	assert.Nil(t, err)
+
+	content, err := ioutil.ReadFile(tempFile.Name())
+	assert.Nil(t, err)
+	assert.Equal(t, "title=A title;body=A body", string(content))
 }
