@@ -59,10 +59,10 @@ func TestEnsureLoggedInCallsLoginIfNotLoggedIn(t *testing.T) {
 
 func TestEnsureLoggedInSavesTokenUsingTokenStorage(t *testing.T) {
 	templateData := struct{
-		WhoAmIExitCode string
+		AccountGetExitCode string
 		Body string
 	}{"1", "echo -n 123"}
-	scriptPath := testUtils.RenderTemplateTestFile(t, "mocked_whoami_script.sh", templateData)
+	scriptPath := testUtils.RenderTemplateTestFile(t, "mocked_op.sh", templateData)
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 	opClient := NewTestOpClient(
 		WithTokenStorage(&tokenStorage),
