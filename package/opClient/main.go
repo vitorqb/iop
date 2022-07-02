@@ -12,6 +12,7 @@ import (
 )
 
 const DEFAULT_CLIENT = "/usr/bin/op"
+const ERRMSG_NO_ACCOUNT_SELECTED = "No account is selected! Please run the `select-account` command"
 
 type IOpClient interface {
 	EnsureLoggedIn()
@@ -77,7 +78,7 @@ func (client OpClient) isLoggedIn() (bool, error) {
 
 	// Whoami returns no error -> we are logged in
 	if err == nil {
-		client.sys.NotifyUser("IOP", "Already logged in!")
+		_ = client.sys.NotifyUser("IOP", "Already logged in!")
 		return true, nil
 	}
 
@@ -96,6 +97,10 @@ func (client OpClient) EnsureLoggedIn() {
 	account, err := client.getCurrentAccount()
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the account", err)
+	}
+	if account == "" {
+		client.sys.Crash(ERRMSG_NO_ACCOUNT_SELECTED, nil)
+		return
 	}
 	isLoggedIn, err := client.isLoggedIn()
 	if err != nil {
