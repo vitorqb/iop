@@ -44,7 +44,7 @@ func WithSystem(s system.ISystem) opTestClientBuilder {
 func NewTestOpClient(builders ...opTestClientBuilder) OpClient {
 	tokenStorage := tokenStorage.NewInMemoryTokenStorage("")
 	mockSystem := system.NewMock()
-	accountStorage := accountStorage.NewInMemoryAccountStorage("")
+	accountStorage := accountStorage.NewInMemoryAccountStorage("ACC")
 	commandRunner := commandRunner.MockedCommandRunner{ReturnValue: ""}
 	options := opTestClientBUildOptions {
 		tokenStorage:   &tokenStorage,

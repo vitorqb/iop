@@ -109,6 +109,18 @@ func TestEnsureLoggedInRunsCorrectCommand(t *testing.T) {
 	assert.Equal(t, commandRunner.LastArgs, []string{"echo", "signin", "--raw", "--account", "account"})
 }
 
+func TestEnsureLoggedInFailsIfAccountNotSet(t *testing.T) {
+	accountStorage := accountStorage.NewInMemoryAccountStorage("")
+	system := system.NewMock()
+	anOpClient := NewTestOpClient(
+		WithAccountStorage(&accountStorage),
+		WithSystem(&system),
+	)
+	anOpClient.EnsureLoggedIn()
+	assert.Equal(t, system.CrashCallCount, 1)
+	assert.Equal(t, system.LastCrashErrMsg, ERRMSG_NO_ACCOUNT_SELECTED)
+}
+
 func TestGetPasswordRetunsThePassword(t *testing.T) {
 	testDataFilePath, err := testUtils.GetTestDataFilePath("password_field_1.json")
 	assert.Nil(t, err)
