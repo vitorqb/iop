@@ -73,10 +73,11 @@ func (client OpClient) isLoggedIn() (bool, error) {
 	if err != nil {
 		client.sys.Crash("Something wen't wrong when recovering the account", err)
 	}	
-	_, err = client.commandRunner.Run(client.path, "whoami", "--session", token, "--account", account)
+	_, err = client.commandRunner.Run(client.path, "account", "get", "--session", token, "--account", account)
 
 	// Whoami returns no error -> we are logged in
 	if err == nil {
+		client.sys.NotifyUser("IOP", "Already logged in!")
 		return true, nil
 	}
 
