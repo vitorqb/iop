@@ -2,7 +2,7 @@ package opClient
 
 import (
 	"github.com/vitorqb/pmwrap/package/accountStorage"
-	"github.com/vitorqb/pmwrap/package/clients/opClient/commandRunner"
+	"github.com/vitorqb/pmwrap/package/commandRunner"
 	"github.com/vitorqb/pmwrap/package/system"
 	"github.com/vitorqb/pmwrap/package/tokenStorage"
 )
