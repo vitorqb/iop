@@ -3,13 +3,11 @@ package commandRunner
 import (
 	"bytes"
 	"io"
-	"os"
 	"os/exec"
 )
 
 type ICommandRunner interface {
 	Run(arg0 string, args ...string) ([]byte, error)
-	RunAsProxy(arg0 string, args ...string)        ([]byte, error) // Runs leaving stdin and stdout from parent
 	RunWithStdin(stdin string, arg0 string, args ...string) ([]byte, error) // Runs passing a string as stdin
 }
 
@@ -40,15 +38,6 @@ func (c CommandRunner) RunWithStdin(stdin string, arg0 string, args ...string) (
 	}
 	return stdout.Bytes(), err
 }
-func (c CommandRunner) RunAsProxy(arg0 string, args ...string) ([]byte, error) {
-	cmd := exec.Command(arg0, args...)
-	var stdout bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	err := cmd.Run()
-	return stdout.Bytes(), err
-}
 
 // Mocked implementation for tests
 type MockedCommandRunner struct {
@@ -69,9 +58,6 @@ func (c *MockedCommandRunner) Run(arg0 string, args ...string) ([]byte, error) {
 	c.CallCount++
 	c.LastArgs = append([]string{arg0}, args...)
 	return []byte(c.ReturnValue), c.Error
-}
-func (c *MockedCommandRunner) RunAsProxy(arg0 string, args ...string) ([]byte, error) {
-	return c.Run(arg0, args...)
 }
 func (c *MockedCommandRunner) RunWithStdin(stdin string, arg0 string, args ...string) ([]byte, error) {
 	return c.Run(arg0, args...)
