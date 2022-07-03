@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/vitorqb/iop/package/testUtils"
+	"github.com/vitorqb/pmwrap/package/testUtils"
 )
 
 

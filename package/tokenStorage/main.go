@@ -6,7 +6,7 @@ import (
 )
 
 // Helper functions for default implementations
-const DEFAULT_TOKEN_FILE_RELATIVE_TO_USER_DIR = ".iop/credentials"
+const DEFAULT_TOKEN_FILE_RELATIVE_TO_USER_DIR = ".pmwrap/credentials"
 
 func getDefaultTokenFile() (string, error) {
 	homeDir, err := os.UserHomeDir()

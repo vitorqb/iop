@@ -5,15 +5,15 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vitorqb/iop/cmd/copyPassword"
-	"github.com/vitorqb/iop/cmd/selectAccount"
-	"github.com/vitorqb/iop/internal/config"
+	"github.com/vitorqb/pmwrap/cmd/copyPassword"
+	"github.com/vitorqb/pmwrap/cmd/selectAccount"
+	"github.com/vitorqb/pmwrap/internal/config"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "iop",
-	Short: "An improved (or simplified) One Password client for mortals",
-	Long:  `iop fits the needs of users of 1password that really only care about querying for their passwords quickly and easily.`,
+	Use:   "pmwrap",
+	Short: "Quickly copy passwords from password managers to the clipboard",
+	Long:  `pmwrap fits the needs of users of password managers that really only care about querying for their passwords quickly and easily.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string)  {
 		err := config.LoadConfig()
 		if err != nil {

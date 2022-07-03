@@ -1,10 +1,10 @@
 package opClient
 
 import (
-	"github.com/vitorqb/iop/package/accountStorage"
-	"github.com/vitorqb/iop/package/opClient/commandRunner"
-	"github.com/vitorqb/iop/package/system"
-	"github.com/vitorqb/iop/package/tokenStorage"
+	"github.com/vitorqb/pmwrap/package/accountStorage"
+	"github.com/vitorqb/pmwrap/package/opClient/commandRunner"
+	"github.com/vitorqb/pmwrap/package/system"
+	"github.com/vitorqb/pmwrap/package/tokenStorage"
 )
 
 // Helper builder for OpClient

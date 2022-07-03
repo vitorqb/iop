@@ -3,10 +3,10 @@ package selectAccount
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/vitorqb/iop/internal/provider"
-	"github.com/vitorqb/iop/package/accountStorage"
-	"github.com/vitorqb/iop/package/opClient"
-	"github.com/vitorqb/iop/package/system"
+	"github.com/vitorqb/pmwrap/internal/provider"
+	"github.com/vitorqb/pmwrap/package/accountStorage"
+	"github.com/vitorqb/pmwrap/package/opClient"
+	"github.com/vitorqb/pmwrap/package/system"
 )
 
 var selectAccountCmd = &cobra.Command{
@@ -38,7 +38,7 @@ func run(
 	if err != nil {
 		system.Crash("Failed to store current account", err)
 	}
-	_ = system.NotifyUser("IOP", "Selected account: " + selectedAccount)
+	_ = system.NotifyUser("PMWRAP", "Selected account: " + selectedAccount)
 }
 
 func Setup(rootCmd *cobra.Command) {

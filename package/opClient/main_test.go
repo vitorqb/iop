@@ -6,12 +6,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vitorqb/iop/package/accountStorage"
-	"github.com/vitorqb/iop/package/opClient/commandRunner"
-	"github.com/vitorqb/iop/package/system"
-	"github.com/vitorqb/iop/package/tempFiles"
-	"github.com/vitorqb/iop/package/testUtils"
-	"github.com/vitorqb/iop/package/tokenStorage"
+	"github.com/vitorqb/pmwrap/package/accountStorage"
+	"github.com/vitorqb/pmwrap/package/opClient/commandRunner"
+	"github.com/vitorqb/pmwrap/package/system"
+	"github.com/vitorqb/pmwrap/package/tempFiles"
+	"github.com/vitorqb/pmwrap/package/testUtils"
+	"github.com/vitorqb/pmwrap/package/tokenStorage"
 )
 
 func TestNewCreatesANewClientInstance(t *testing.T) {

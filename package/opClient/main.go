@@ -5,10 +5,10 @@ import (
 	"log"
 	"os/exec"
 
-	"github.com/vitorqb/iop/package/accountStorage"
-	"github.com/vitorqb/iop/package/opClient/commandRunner"
-	"github.com/vitorqb/iop/package/system"
-	"github.com/vitorqb/iop/package/tokenStorage"
+	"github.com/vitorqb/pmwrap/package/accountStorage"
+	"github.com/vitorqb/pmwrap/package/opClient/commandRunner"
+	"github.com/vitorqb/pmwrap/package/system"
+	"github.com/vitorqb/pmwrap/package/tokenStorage"
 )
 
 const DEFAULT_CLIENT = "/usr/bin/op"
@@ -78,7 +78,7 @@ func (client OpClient) isLoggedIn() (bool, error) {
 
 	// Whoami returns no error -> we are logged in
 	if err == nil {
-		_ = client.sys.NotifyUser("IOP", "Already logged in!")
+		_ = client.sys.NotifyUser("PMWRAP", "Already logged in!")
 		return true, nil
 	}
 
@@ -113,7 +113,7 @@ func (client OpClient) EnsureLoggedIn() {
 	if err != nil {
 		client.sys.Crash("Something wen't wrong querying user for pin", err)
 	}
-	_ = client.sys.NotifyUser("IOP", "Logging you in...")
+	_ = client.sys.NotifyUser("PMWRAP", "Logging you in...")
 	result, err := client.commandRunner.RunWithStdin(pin, client.path, "signin", "--raw", "--account", account)
 	if err != nil {
 		client.sys.Crash("Something wen't wrong during signin", err)
@@ -122,7 +122,7 @@ func (client OpClient) EnsureLoggedIn() {
 	if err != nil {
 		log.Printf("WARNING: could not save token: %s\n", err)
 	}
-	_ = client.sys.NotifyUser("IOP", "Login successfull!")
+	_ = client.sys.NotifyUser("PMWRAP", "Login successfull!")
 }
 
 func (client OpClient) GetPassword(itemRef string) string {
@@ -139,7 +139,7 @@ func (client OpClient) GetPassword(itemRef string) string {
 }
 
 func (client OpClient) ListItemTitles() []string {
-	_ = client.sys.NotifyUser("IOP", "Querying 1P for list of all items...")
+	_ = client.sys.NotifyUser("PMWRAP", "Querying 1P for list of all items...")
 	var items, err = client.listItems()
 	if err != nil {
 		client.sys.Crash("Something went wrong recovering the list of items", err)

@@ -32,5 +32,5 @@ done
 
 # Script
 run mkdir -p ./dist
-run go build -o ./dist/iop
-run bash -c '( cd dist && tar -vzcf iop.tar.gz iop)'
+run go build -o ./dist/pmwrap
+run bash -c '( cd dist && tar -vzcf pmwrap.tar.gz pmwrap)'

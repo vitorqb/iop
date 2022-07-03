@@ -10,7 +10,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/vitorqb/iop/internal/config"
+	"github.com/vitorqb/pmwrap/internal/config"
 )
 
 // An interface to control the System
@@ -29,7 +29,7 @@ type System struct {
 }
 
 func (s *System) Crash(errMsg string, err error) {
-	_ = s.NotifyUser("IOP ERROR! :(", errMsg)
+	_ = s.NotifyUser("PMWRAP ERROR! :(", errMsg)
 	log.Fatal(errMsg, " - ", err)
 	os.Exit(99)
 }

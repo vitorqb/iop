@@ -7,7 +7,7 @@ import (
 
 // Default configuration path passed to Viper
 var CONFIG_PATH = "$HOME/.config/"
-var CONFIG_NAME = "iop"
+var CONFIG_NAME = "pmwrap"
 
 // A struct containing all global configuration
 type config struct {

@@ -1,18 +1,16 @@
-# Improved OP
+# Password Manager Wrapper
 
-An improved (or simplified) version of the OnePassword (op) cli.
-
-For users like me who just want to have their passwords copied to the clipboard
-without having to click buttons or run multiple commands.
+A wrapper arround password manager to make it easier to copy a 
+password to your clipboard with minimal user interaction.
 
 ## Install
 
 ### Installing on Archlinux
 
 ```shell
-rm -rf ~/.cache/packages/iop && mkdir -p ~/.cache/packages
-git clone 'https://github.com/vitorqb/iop-pkgbuild.git' ~/.cache/packages/iop
-( cd ~/.cache/packages/iop && makepkg -si )
+rm -rf ~/.cache/packages/pmwrap && mkdir -p ~/.cache/packages
+git clone 'https://github.com/vitorqb/pmwrap-pkgbuild.git' ~/.cache/packages/pmwrap
+( cd ~/.cache/packages/pmwrap && makepkg -si )
 ```
 
 ### Manual Install
@@ -21,7 +19,7 @@ Make sure `~/.local/bin` is in your `PATH`.
 
 ```shell
 mkdir -p ~/.local/bin && cd ~/.local/bin
-curl -L 'https://github.com/vitorqb/iop/releases/latest/download/iop.tar.gz' | tar -zx
+curl -L 'https://github.com/vitorqb/pmwrap/releases/latest/download/pmwrap.tar.gz' | tar -zx
 ```
 
 ## Install: Dependencies
@@ -29,12 +27,12 @@ curl -L 'https://github.com/vitorqb/iop/releases/latest/download/iop.tar.gz' | t
 ### [dmenu](https://tools.suckless.org/dmenu/) (or alternatives)
 
 In order to query an user to select an item (e.g. an account, a
-password to copy, etc.), `iop` requires `dmenu` or a similar command
+password to copy, etc.), `pmwrap` requires `dmenu` or a similar command
 to be available. Look for `dmenu` in [Configuration](#configuration).
 
 ### [pinentry](https://www.gnupg.org/related_software/pinentry/index.html) (or similar)
 
-In order to ask the user for a pin, `iop` requires `pinentry`, which
+In order to ask the user for a pin, `pmwrap` requires `pinentry`, which
 usually comes with gnupg. Look for `pinentry` in [Configuration](#configuration).
 
 ### [libnotify](https://gitlab.gnome.org/GNOME/libnotify)
@@ -46,21 +44,21 @@ command which comes with `libnotify`.
 
 ```shell
 # See help and usage
-iop --help
+pmwrap --help
 
 # Set's the active account. Run this before anything else. Interactive.
-iop select-account
+pmwrap select-account
 
 # Copies a password to the clipboard (interactive)
-iop copy-password
+pmwrap copy-password
 
 # Copies a password to the clipboard. Exact match by name or ID. (non-interactive).
-iop copy-password -n Github
+pmwrap copy-password -n Github
 ```
 
 ## Configuration
 
-A configuration file is expected in `~/.config/iop.yaml`.
+A configuration file is expected in `~/.config/pmwrap.yaml`.
 
 ```yaml
 # Customize the dmenu command used to query the user for selecting an item.

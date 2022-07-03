@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/vitorqb/iop/package/tempFiles"
+	"github.com/vitorqb/pmwrap/package/tempFiles"
 )
 
 func GetTestDataFilePath(testDataFileName string) (string, error) {

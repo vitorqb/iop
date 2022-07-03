@@ -4,9 +4,9 @@ import (
 	"github.com/atotto/clipboard"
 	"github.com/spf13/cobra"
 
-	"github.com/vitorqb/iop/internal/provider"
-	"github.com/vitorqb/iop/package/opClient"
-	"github.com/vitorqb/iop/package/system"
+	"github.com/vitorqb/pmwrap/internal/provider"
+	"github.com/vitorqb/pmwrap/package/opClient"
+	"github.com/vitorqb/pmwrap/package/system"
 )
 
 var copyPasswordCmd = &cobra.Command{
@@ -39,7 +39,7 @@ func run(client opClient.IOpClient, itemRef string, system system.ISystem) {
 	if err != nil {
 		system.Crash("Something went wrong when writing to clipboard", err)
 	}
-	_ = system.NotifyUser("IOP", "The password has been saved to clipboard and is ready to be used :)")
+	_ = system.NotifyUser("PMWRAP", "The password has been saved to clipboard and is ready to be used :)")
 }
 
 func Setup(rootCmd *cobra.Command) {

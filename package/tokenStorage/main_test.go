@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vitorqb/iop/package/tempFiles"
+	"github.com/vitorqb/pmwrap/package/tempFiles"
 )
 
 func Test_FileTokenStorage_PutAndGet(t *testing.T) {

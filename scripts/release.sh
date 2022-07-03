@@ -49,4 +49,4 @@ then
     export GH_TOKEN="$(cat $GH_TOKEN_FILE | tr -d '\n' )"
 fi
 run ${SCRIPT_DIR}/build.sh
-run gh release create "$VERSION" --generate-notes ./dist/iop.tar.gz
+run gh release create "$VERSION" --generate-notes ./dist/pmwrap.tar.gz

@@ -4,11 +4,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/vitorqb/iop/package/accountStorage"
-	"github.com/vitorqb/iop/package/opClient"
-	"github.com/vitorqb/iop/package/opClient/commandRunner"
-	"github.com/vitorqb/iop/package/system"
-	"github.com/vitorqb/iop/package/tokenStorage"
+	"github.com/vitorqb/pmwrap/package/accountStorage"
+	"github.com/vitorqb/pmwrap/package/opClient"
+	"github.com/vitorqb/pmwrap/package/opClient/commandRunner"
+	"github.com/vitorqb/pmwrap/package/system"
+	"github.com/vitorqb/pmwrap/package/tokenStorage"
 )
 
 func getUserDir(system system.ISystem) string {
@@ -34,7 +34,7 @@ func TokenStorage(system system.ISystem) tokenStorage.ITokenStorage {
 
 func AccountStorage(system system.ISystem) accountStorage.IAccountStorage {
 	homeDir := getUserDir(system)
-	filePath := filepath.Join(homeDir, ".iop/currentAccount")
+	filePath := filepath.Join(homeDir, ".pmwrap/currentAccount")
 	return accountStorage.New(filePath)
 }
 

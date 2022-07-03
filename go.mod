@@ -1,4 +1,4 @@
-module github.com/vitorqb/iop
+module github.com/vitorqb/pmwrap
 
 go 1.18
 
