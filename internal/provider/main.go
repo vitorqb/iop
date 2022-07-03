@@ -5,8 +5,9 @@ import (
 	"path/filepath"
 
 	"github.com/vitorqb/pmwrap/package/accountStorage"
-	"github.com/vitorqb/pmwrap/package/opClient"
-	"github.com/vitorqb/pmwrap/package/opClient/commandRunner"
+	"github.com/vitorqb/pmwrap/package/clients"
+	"github.com/vitorqb/pmwrap/package/clients/opClient"
+	"github.com/vitorqb/pmwrap/package/clients/opClient/commandRunner"
 	"github.com/vitorqb/pmwrap/package/system"
 	"github.com/vitorqb/pmwrap/package/tokenStorage"
 )
@@ -42,7 +43,7 @@ func OpClient(
 	sys system.ISystem,
 	tokenStorage tokenStorage.ITokenStorage,
 	accountStorage accountStorage.IAccountStorage,
-) opClient.IOpClient {
+) clients.IClient {
 	commandRunner := commandRunner.CommandRunner{}
 	return opClient.New(sys, tokenStorage, accountStorage, commandRunner)
 }

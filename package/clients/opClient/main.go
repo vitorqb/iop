@@ -6,20 +6,13 @@ import (
 	"os/exec"
 
 	"github.com/vitorqb/pmwrap/package/accountStorage"
-	"github.com/vitorqb/pmwrap/package/opClient/commandRunner"
+	"github.com/vitorqb/pmwrap/package/clients/opClient/commandRunner"
 	"github.com/vitorqb/pmwrap/package/system"
 	"github.com/vitorqb/pmwrap/package/tokenStorage"
 )
 
 const DEFAULT_CLIENT = "/usr/bin/op"
 const ERRMSG_NO_ACCOUNT_SELECTED = "No account is selected! Please run the `select-account` command"
-
-type IOpClient interface {
-	EnsureLoggedIn()
-	GetPassword(itemRef string) string
-	ListItemTitles() []string
-	ListAccounts() ([]string, error)
-}
 
 // A client for the `op` (1password cli) program
 type OpClient struct {

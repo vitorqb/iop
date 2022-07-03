@@ -5,7 +5,7 @@ import (
 
 	"github.com/vitorqb/pmwrap/internal/provider"
 	"github.com/vitorqb/pmwrap/package/accountStorage"
-	"github.com/vitorqb/pmwrap/package/opClient"
+	"github.com/vitorqb/pmwrap/package/clients"
 	"github.com/vitorqb/pmwrap/package/system"
 )
 
@@ -22,7 +22,7 @@ var selectAccountCmd = &cobra.Command{
 }
 
 func run(
-	client opClient.IOpClient,
+	client clients.IClient,
 	system system.ISystem,
 	accountStorage accountStorage.IAccountStorage,
 ) {

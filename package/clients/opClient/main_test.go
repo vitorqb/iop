@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vitorqb/pmwrap/package/accountStorage"
-	"github.com/vitorqb/pmwrap/package/opClient/commandRunner"
+	"github.com/vitorqb/pmwrap/package/clients/opClient/commandRunner"
 	"github.com/vitorqb/pmwrap/package/system"
 	"github.com/vitorqb/pmwrap/package/tempFiles"
 	"github.com/vitorqb/pmwrap/package/testUtils"

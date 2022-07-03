@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/vitorqb/pmwrap/internal/provider"
-	"github.com/vitorqb/pmwrap/package/opClient"
+	"github.com/vitorqb/pmwrap/package/clients"
 	"github.com/vitorqb/pmwrap/package/system"
 )
 
@@ -23,7 +23,7 @@ var copyPasswordCmd = &cobra.Command{
 	},
 }
 
-func run(client opClient.IOpClient, itemRef string, system system.ISystem) {
+func run(client clients.IClient, itemRef string, system system.ISystem) {
 	client.EnsureLoggedIn()
 	if itemRef == "" {
 		titles := client.ListItemTitles()
